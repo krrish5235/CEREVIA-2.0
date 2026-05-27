@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Settings</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sage:     #6ec6a2;
+            --lavender: #cbb8f5;
+            --violet:   #9b7fe8;
+            --cream:    #fef9f4;
+            --text:     #2c2438;
+            --sub:      #7b6f8a;
+            --glass:    rgba(255,255,255,0.55);
+            --shadow:   0 20px 60px rgba(100,80,140,0.14);
+            --radius-lg: 26px;
+            --radius-md: 16px;
+            --trans:    0.35s cubic-bezier(.4,0,.2,1);
+            --font-display: 'DM Serif Display', serif;
+            --font-body:    'DM Sans', sans-serif;
+        }
+        body.dark {
+            --cream:  #16121f;
+            --text:   #f0eaf8;
+            --sub:    #b0a0c8;
+            --glass:  rgba(30,24,46,0.62);
+            --shadow: 0 20px 60px rgba(0,0,0,0.45);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--cream);
+            color: var(--text);
+            min-height: 100vh;
+            transition: background var(--trans), color var(--trans);
+            animation: pageFadeIn 0.5s ease both;
+            padding-bottom: 80px;
+        }
+
+        @keyframes pageFadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Blobs ── */
+        .bg-wrap { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+        .blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4; animation: blobDrift 16s ease-in-out infinite; }
+        .blob-1 { width: 580px; height: 580px; background: #c3f4e4; top: -180px; left: -140px; }
+        .blob-2 { width: 460px; height: 460px; background: #e4d4fc; bottom: -120px; right: -100px; animation-delay: -6s; }
+        .blob-3 { width: 360px; height: 360px; background: #fcd4e8; top: 42%; left: 54%; animation-delay: -11s; }
+        body.dark .blob-1 { background: #112e42; opacity: 0.55; }
+        body.dark .blob-2 { background: #28144c; opacity: 0.55; }
+        body.dark .blob-3 { background: #3a1228; opacity: 0.45; }
+        @keyframes blobDrift {
+            0%,100% { transform: translate(0,0) scale(1); }
+            33%      { transform: translate(28px,-22px) scale(1.04); }
+            66%      { transform: translate(-18px,22px) scale(0.97); }
+        }
+
+        /* ── Nav ── */
+        .top-nav {
+            position: sticky; top: 0; z-index: 50;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 32px;
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
+            border-bottom: 1px solid rgba(180,160,220,0.18);
+            box-shadow: 0 4px 24px rgba(100,80,140,0.07);
+        }
+        body.dark .top-nav { background: rgba(22,18,31,0.72); border-bottom-color: rgba(255,255,255,0.07); }
+
+        .nav-logo {
+            font-family: var(--font-display); font-size: 21px; color: var(--text);
+            letter-spacing: -0.3px; display: flex; align-items: center; gap: 8px; text-decoration: none;
+        }
+        .nav-logo-icon .logo{
+            width: 34px; height: 34px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 17px;
+        }
+        .nav-right { display: flex; align-items: center; gap: 8px; }
+        .nav-back {
+            display: flex; align-items: center; gap: 6px; padding: 8px 18px; border-radius: 50px;
+            border: 1.5px solid rgba(180,160,220,0.25); background: rgba(255,255,255,0.4);
+            color: var(--text); font-size: 13.5px; font-weight: 600; font-family: var(--font-body);
+            cursor: pointer; transition: var(--trans); text-decoration: none; backdrop-filter: blur(10px);
+        }
+        body.dark .nav-back { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.1); }
+        .nav-back:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(100,80,140,0.14); }
+
+        .dark-toggle input { display: none; }
+        .dark-toggle label {
+            width: 48px; height: 26px; background: rgba(180,160,220,0.25);
+            border: 1.5px solid rgba(180,160,220,0.4); display: block; border-radius: 50px;
+            position: relative; cursor: pointer; transition: var(--trans);
+        }
+        .dark-toggle label::before {
+            content: "☀️"; font-size: 11px; width: 20px; height: 20px; background: white;
+            position: absolute; top: 2px; left: 2px; border-radius: 50%; transition: var(--trans);
+            display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+        }
+        .dark-toggle input:checked + label { background: rgba(106,17,203,0.35); border-color: rgba(106,17,203,0.5); }
+        .dark-toggle input:checked + label::before { content: "🌙"; transform: translateX(22px); }
+
+        /* ── Layout ── */
+        .page-wrap {
+            position: relative; z-index: 10;
+            max-width: 680px; margin: 0 auto;
+            padding: 40px 28px 0;
+        }
+
+        .page-greeting { font-size: 13px; font-weight: 600; letter-spacing: 0.7px; text-transform: uppercase; color: var(--sub); margin-bottom: 6px; }
+        .page-title { font-family: var(--font-display); font-size: 36px; color: var(--text); letter-spacing: -0.8px; line-height: 1.1; margin-bottom: 36px; }
+        .page-title span {
+            background: linear-gradient(135deg, var(--sage), var(--violet));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+
+        /* ── Settings Section ── */
+        .settings-section {
+            background: var(--glass);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(255,255,255,0.65);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            overflow: hidden;
+            margin-bottom: 20px;
+            animation: cardFadeIn 0.6s ease both;
+            transition: box-shadow var(--trans);
+        }
+        body.dark .settings-section { border-color: rgba(255,255,255,0.09); background: rgba(30,24,46,0.62); }
+        .settings-section:hover { box-shadow: 0 28px 64px rgba(100,80,140,0.18); }
+
+        @keyframes cardFadeIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Section header */
+        .section-header {
+            display: flex; align-items: center; gap: 14px;
+            padding: 22px 26px 18px;
+            border-bottom: 1px solid rgba(180,160,220,0.12);
+        }
+        body.dark .section-header { border-bottom-color: rgba(255,255,255,0.07); }
+
+        .section-icon {
+            width: 42px; height: 42px; border-radius: 14px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; font-size: 20px;
+        }
+        .icon-purple { background: linear-gradient(135deg, rgba(203,184,245,0.4), rgba(155,127,232,0.4)); }
+        .icon-teal   { background: linear-gradient(135deg, rgba(168,240,216,0.4), rgba(110,198,162,0.4)); }
+        .icon-blue   { background: linear-gradient(135deg, rgba(168,210,255,0.4), rgba(90,158,245,0.4)); }
+        .icon-red    { background: linear-gradient(135deg, rgba(255,180,180,0.4), rgba(220,80,80,0.4)); }
+
+        .section-meta { flex: 1; }
+        .section-title { font-family: var(--font-display); font-size: 18px; color: var(--text); line-height: 1.2; }
+        .section-sub { font-size: 12.5px; color: var(--sub); margin-top: 2px; }
+
+        /* Section body */
+        .section-body { padding: 20px 26px 24px; }
+
+        /* ── PIN Row ── */
+        .pin-row {
+            display: flex; gap: 10px; align-items: stretch;
+        }
+
+        .pin-field-wrap { position: relative; flex: 1; }
+        .pin-icon {
+            position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+            font-size: 16px; pointer-events: none;
+        }
+        .pin-input {
+            width: 100%; padding: 13px 14px 13px 42px;
+            border-radius: var(--radius-md);
+            border: 1.5px solid rgba(180,160,220,0.22);
+            background: rgba(255,255,255,0.65);
+            color: var(--text); font-family: var(--font-body);
+            font-size: 15px; outline: none; transition: var(--trans);
+        }
+        body.dark .pin-input { background: rgba(255,255,255,0.08); color: var(--text); border-color: rgba(255,255,255,0.1); }
+        .pin-input::placeholder { color: var(--sub); font-weight: 400; }
+        .pin-input:focus {
+            border-color: var(--lavender);
+            box-shadow: 0 0 0 3px rgba(203,184,245,0.2);
+            background: rgba(255,255,255,0.9);
+        }
+        body.dark .pin-input:focus { background: rgba(255,255,255,0.13); }
+
+        .btn-update {
+            padding: 13px 22px; border: none;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, var(--sage), var(--violet));
+            color: white; font-family: var(--font-body);
+            font-size: 14px; font-weight: 700; cursor: pointer;
+            transition: var(--trans); white-space: nowrap;
+            box-shadow: 0 6px 18px rgba(110,198,162,0.3);
+        }
+        .btn-update:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(110,198,162,0.42); }
+        .btn-update:active { transform: translateY(0); }
+
+        /* ── Theme Row ── */
+        .theme-options {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+        }
+
+        .theme-card {
+            padding: 16px;
+            border-radius: var(--radius-md);
+            border: 2px solid rgba(180,160,220,0.18);
+            background: rgba(255,255,255,0.4);
+            cursor: pointer; transition: var(--trans);
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+            user-select: none;
+        }
+        body.dark .theme-card { background: rgba(255,255,255,0.06); }
+        .theme-card:hover { transform: translateY(-2px); border-color: rgba(203,184,245,0.4); }
+        .theme-card.active {
+            border-color: var(--violet);
+            background: linear-gradient(135deg, rgba(168,240,216,0.22), rgba(203,184,245,0.22));
+            box-shadow: 0 0 0 1px var(--violet), 0 8px 20px rgba(155,127,232,0.18);
+        }
+
+        .theme-preview {
+            width: 100%; height: 60px; border-radius: 10px; overflow: hidden;
+            position: relative;
+        }
+        .preview-light {
+            background: linear-gradient(135deg, #fef9f4, #e8f8f2, #f3ecfc);
+            height: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .preview-dark {
+            background: linear-gradient(135deg, #16121f, #1e1433, #12201a);
+            height: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .preview-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .preview-light .preview-dot:nth-child(1) { background: #6ec6a2; }
+        .preview-light .preview-dot:nth-child(2) { background: #cbb8f5; }
+        .preview-light .preview-dot:nth-child(3) { background: #f6c4d4; }
+        .preview-dark  .preview-dot:nth-child(1) { background: #3a9e7e; }
+        .preview-dark  .preview-dot:nth-child(2) { background: #8b62d8; }
+        .preview-dark  .preview-dot:nth-child(3) { background: #c084a4; }
+
+        .theme-name {
+            font-size: 13.5px; font-weight: 700; color: var(--text);
+            display: flex; align-items: center; gap: 5px;
+        }
+
+        .theme-active-badge {
+            display: none; padding: 2px 9px; border-radius: 50px;
+            background: linear-gradient(135deg, var(--sage), var(--violet));
+            color: white; font-size: 10px; font-weight: 700; letter-spacing: 0.3px;
+        }
+        .theme-card.active .theme-active-badge { display: inline-block; }
+
+        /* ── Info rows ── */
+        .info-rows { display: flex; flex-direction: column; gap: 0; }
+
+        .info-row {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 13px 0;
+            border-bottom: 1px solid rgba(180,160,220,0.1);
+        }
+        body.dark .info-row { border-bottom-color: rgba(255,255,255,0.06); }
+        .info-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+        .info-key { font-size: 13.5px; font-weight: 600; color: var(--sub); }
+        .info-val {
+            font-size: 13.5px; font-weight: 700; color: var(--text);
+            display: flex; align-items: center; gap: 6px;
+        }
+
+        .info-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--sage), var(--violet));
+            animation: pulseDot 2s infinite ease-in-out;
+        }
+        @keyframes pulseDot {
+            0%,100% { transform: scale(1); opacity: 1; }
+            50%      { transform: scale(1.4); opacity: 0.5; }
+        }
+
+        .privacy-chip {
+            padding: 4px 12px; border-radius: 50px;
+            background: linear-gradient(135deg, rgba(168,240,216,0.4), rgba(203,184,245,0.4));
+            border: 1px solid rgba(180,160,220,0.22);
+            font-size: 11.5px; font-weight: 700; color: var(--text);
+        }
+
+        /* ── Danger zone ── */
+        .danger-section { animation-delay: .25s; }
+
+        .danger-actions { display: flex; flex-direction: column; gap: 10px; }
+
+        .btn-home {
+            width: 100%; padding: 14px;
+            border: 1.5px solid rgba(180,160,220,0.25);
+            border-radius: var(--radius-md);
+            background: rgba(255,255,255,0.4);
+            color: var(--text); font-family: var(--font-body);
+            font-size: 15px; font-weight: 600; cursor: pointer; transition: var(--trans);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        body.dark .btn-home { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.1); }
+        .btn-home:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(100,80,140,0.12); border-color: var(--lavender); }
+
+        .btn-logout {
+            width: 100%; padding: 14px;
+            border: 1.5px solid rgba(220,80,80,0.25);
+            border-radius: var(--radius-md);
+            background: rgba(220,80,80,0.08);
+            color: #c04040; font-family: var(--font-body);
+            font-size: 15px; font-weight: 700; cursor: pointer; transition: var(--trans);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-logout:hover { background: rgba(220,80,80,0.17); transform: translateY(-1px); box-shadow: 0 8px 22px rgba(220,80,80,0.18); }
+
+        /* ── Popup ── */
+        .popup {
+            position: fixed; bottom: 32px; left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            padding: 13px 30px;
+            background: linear-gradient(135deg, var(--sage), var(--violet));
+            color: white; border-radius: 50px; font-size: 14px; font-weight: 600;
+            box-shadow: 0 14px 34px rgba(110,198,162,0.38); opacity: 0;
+            transition: 0.45s cubic-bezier(.34,1.56,.64,1);
+            z-index: 9999; pointer-events: none;
+        }
+        .popup.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(180,160,220,0.28); border-radius: 8px; }
+    </style>
+</head>
+<body>
+
+<!-- Blobs -->
+<div class="bg-wrap">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+</div>
+
+<!-- Nav -->
+<nav class="top-nav">
+    <a class="nav-logo" href="dashboard.html">
+        <div class="nav-logo-icon"><img class="logo" src="Mental Health Tracker LOGO.png" alt="C" srcset=""></div>
+        CEREVIA
+    </div>
+    </a>
+    <div class="nav-right">
+        <a class="nav-back" href="dashboard.html">← Dashboard</a>
+        <div class="dark-toggle">
+            <input type="checkbox" id="darkSwitch" onclick="toggleDarkMode()">
+            <label for="darkSwitch"></label>
+        </div>
+    </div>
+</nav>
+
+<!-- Page -->
+<div class="page-wrap">
+
+    <p class="page-greeting">Preferences ⚙️</p>
+    <h1 class="page-title">Your <span>Settings</span></h1>
+
+    <!-- Change PIN -->
+    <div class="settings-section" style="animation-delay:.05s">
+        <div class="section-header">
+            <div class="section-icon icon-purple">🔐</div>
+            <div class="section-meta">
+                <div class="section-title">Change PIN</div>
+                <div class="section-sub">Update your security PIN at any time</div>
+            </div>
+        </div>
+        <div class="section-body">
+            <div class="pin-row">
+                <div class="pin-field-wrap">
+                    <span class="pin-icon">🔒</span>
+                    <input class="pin-input" type="password" id="newPin" placeholder="Enter new PIN">
+                </div>
+                <button class="btn-update" onclick="registerPin()">Update</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Theme -->
+    <div class="settings-section" style="animation-delay:.1s">
+        <div class="section-header">
+            <div class="section-icon icon-teal">🎨</div>
+            <div class="section-meta">
+                <div class="section-title">Appearance</div>
+                <div class="section-sub">Choose how Serenity looks</div>
+            </div>
+        </div>
+        <div class="section-body">
+            <div class="theme-options">
+                <div class="theme-card" id="lightCard" onclick="setTheme('light')">
+                    <div class="theme-preview"><div class="preview-light"><div class="preview-dot"></div><div class="preview-dot"></div><div class="preview-dot"></div></div></div>
+                    <div class="theme-name">☀️ Light <span class="theme-active-badge">Active</span></div>
+                </div>
+                <div class="theme-card" id="darkCard" onclick="setTheme('dark')">
+                    <div class="theme-preview"><div class="preview-dark"><div class="preview-dot"></div><div class="preview-dot"></div><div class="preview-dot"></div></div></div>
+                    <div class="theme-name">🌙 Dark <span class="theme-active-badge">Active</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Info -->
+    <div class="settings-section" style="animation-delay:.15s">
+        <div class="section-header">
+            <div class="section-icon icon-blue">ℹ️</div>
+            <div class="section-meta">
+                <div class="section-title">About Serenity</div>
+                <div class="section-sub">App information & privacy</div>
+            </div>
+        </div>
+        <div class="section-body">
+            <div class="info-rows">
+                <div class="info-row">
+                    <span class="info-key">App name</span>
+                    <span class="info-val">CEREVIA</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-key">Version</span>
+                    <span class="info-val">1.0.0</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-key">Status</span>
+                    <span class="info-val"><span class="info-dot"></span> Online</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-key">Data storage</span>
+                    <span class="info-val"><span class="privacy-chip">🔒 Local Storage & Private</span></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-key">Copyright</span>
+                    <span class="info-val">2026-27</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-key">Developed By</span>
+                    <span class="info-val">Harsh, Abhay, Akanksha</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-key">Purpose</span>
+                    <span class="info-val">Mental health support</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Danger Zone -->
+    <div class="settings-section danger-section" style="animation-delay:.2s">
+        <div class="section-header">
+            <div class="section-icon icon-red">🚪</div>
+            <div class="section-meta">
+                <div class="section-title">Account</div>
+                <div class="section-sub">Navigation & session management</div>
+            </div>
+        </div>
+        <div class="section-body">
+            <div class="danger-actions">
+                <button class="btn-home" onclick="window.location='dashboard.html'">
+                    🏠 Go to Dashboard
+                </button>
+                <button class="btn-logout" onclick="logout()">
+                    👋 Sign Out
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div id="popup" class="popup"></div>
+
+<script src="app.js" defer></script>
+<script>
+    /* ── Theme ── */
+    function applyPageTheme(mode) {
+        const isDark = mode === 'dark';
+        document.body.classList.toggle('dark', isDark);
+        syncThemeCards(isDark);
+        syncToggle(isDark);
+    }
+
+    function toggleDarkMode() {
+        const nextTheme = document.body.classList.contains('dark') ? 'light' : 'dark';
+        setTheme(nextTheme);
+    }
+
+    function setTheme(mode) {
+        localStorage.setItem('theme', mode === 'dark' ? 'dark' : 'light');
+        applyPageTheme(mode);
+    }
+
+    function syncThemeCards(isDark) {
+        document.getElementById('lightCard').classList.toggle('active', !isDark);
+        document.getElementById('darkCard').classList.toggle('active',  isDark);
+    }
+
+    function syncToggle(isDark) {
+        const sw = document.getElementById('darkSwitch');
+        if (sw) sw.checked = isDark;
+    }
+
+    function restoreTheme() {
+        applyPageTheme(localStorage.getItem('theme') === 'dark' ? 'dark' : 'light');
+    }
+
+    window.addEventListener('storage', function (event) {
+        if (event.key === 'theme') restoreTheme();
+    });
+
+    /* Alias for app.js compatibility */
+    function toggleThemeFromSettings() { toggleDarkMode(); }
+
+    /* ── Popup ── */
+    function showPopup(msg) {
+        const p = document.getElementById('popup');
+        p.textContent = msg; p.classList.add('show');
+        setTimeout(() => p.classList.remove('show'), 2800);
+    }
+
+    /* ── PIN update ── */
+    function updatePin() {
+        const pin = document.getElementById('newPin').value;
+        if (!pin) { showPopup('⚠️ Please enter a new PIN'); return; }
+        if (typeof API_URL !== 'undefined') {
+            fetch(`${API_URL}/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pin })
+            })
+            .then(r => r.json())
+            .then(d => showPopup(d.success ? '✅ PIN updated!' : '❌ Error updating PIN'));
+        }
+    }
+
+    window.onload = function () {
+        restoreTheme();
+        if (typeof registerPin === 'undefined') window.registerPin = updatePin;
+    };
+</script>
+</body>
+</html>

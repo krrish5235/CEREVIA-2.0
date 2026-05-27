@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>CEREVIA — Mental Health Support</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --mint:    #a8f0d8;
+            --sage:    #6ec6a2;
+            --blush:   #f6c4d4;
+            --lavender:#cbb8f5;
+            --cream:   #fef9f4;
+            --text:    #2c2438;
+            --sub:     #7b6f8a;
+            --glass:   rgba(255,255,255,0.55);
+            --shadow:  0 30px 80px rgba(100,80,140,0.18);
+            --radius:  22px;
+            --trans:   0.35s cubic-bezier(.4,0,.2,1);
+        }
+
+        body.dark {
+            --cream:   #1a1625;
+            --text:    #f0eaf8;
+            --sub:     #b0a0c8;
+            --glass:   rgba(30,24,46,0.65);
+            --shadow:  0 30px 80px rgba(0,0,0,0.45);
+        }
+
+        /* ─── Reset & Base ─── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: var(--cream);
+            transition: background var(--trans);
+        }
+
+        /* ─── Animated Blob Background ─── */
+        .bg-wrap {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(70px);
+            opacity: 0.55;
+            animation: drift 12s ease-in-out infinite;
+        }
+
+        .blob-1 { width: 500px; height: 500px; background: #c7f4e0; top: -120px; left: -100px; animation-delay: 0s; }
+        .blob-2 { width: 420px; height: 420px; background: #e8d6fa; bottom: -100px; right: -80px; animation-delay: -4s; }
+        .blob-3 { width: 320px; height: 320px; background: #fad6e8; top: 40%; left: 55%; animation-delay: -8s; }
+
+        @keyframes drift {
+            0%,100% { transform: translate(0,0) scale(1); }
+            33%      { transform: translate(30px,-25px) scale(1.05); }
+            66%      { transform: translate(-20px,20px) scale(0.97); }
+        }
+
+        body.dark .blob-1 { background: #1e3a52; }
+        body.dark .blob-2 { background: #2e1a4e; }
+        body.dark .blob-3 { background: #3a1a2e; }
+
+        /* ─── Dark Toggle ─── */
+        .dark-toggle {
+            position: fixed;
+            top: 24px;
+            right: 28px;
+            z-index: 100;
+        }
+
+        .dark-toggle input { display: none; }
+
+        .dark-toggle label {
+            width: 52px;
+            height: 28px;
+            background: rgba(180,160,220,0.3);
+            border: 2px solid rgba(180,160,220,0.5);
+            display: block;
+            border-radius: 50px;
+            position: relative;
+            cursor: pointer;
+            transition: var(--trans);
+            backdrop-filter: blur(8px);
+        }
+
+        .dark-toggle label::before {
+            content: "☀️";
+            font-size: 13px;
+            width: 22px;
+            height: 22px;
+            background: white;
+            position: absolute;
+            top: 1px; left: 1px;
+            border-radius: 50%;
+            transition: var(--trans);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .dark-toggle input:checked + label { background: rgba(106,17,203,0.4); border-color: rgba(106,17,203,0.5); }
+        .dark-toggle input:checked + label::before { content: "🌙"; transform: translateX(24px); }
+
+        /* ─── Main Card ─── */
+        .card {
+            position: relative;
+            z-index: 10;
+            width: 420px;
+            padding: 48px 44px 40px;
+            background: var(--glass);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: 32px;
+            border: 1px solid rgba(255,255,255,0.6);
+            box-shadow: var(--shadow);
+            animation: riseIn 0.7s cubic-bezier(.34,1.56,.64,1) both;
+        }
+
+        body.dark .card {
+            border-color: rgba(255,255,255,0.1);
+        }
+
+        @keyframes riseIn {
+            from { opacity: 0; transform: translateY(40px) scale(0.95); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* ─── Header ─── */
+        .card-header {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+
+        .icon-wrap .logo{
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 16px;
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            
+        }
+
+        @keyframes floatIcon {
+            0%,100% { transform: translateY(0); }
+            50%      { transform: translateY(-7px); }
+        }
+
+        .app-name {
+            font-family: 'DM Serif Display', serif;
+            font-size: 28px;
+            color: var(--text);
+            letter-spacing: 2.5px;
+            transition: color var(--trans);
+        }
+
+        .app-tagline {
+            margin-top: 5px;
+            font-size: 14px;
+            color: var(--sub);
+            font-weight: 400;
+            transition: color var(--trans);
+        }
+
+        /* ─── Input ─── */
+        .field {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .field-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            pointer-events: none;
+        }
+
+        .field input {
+            width: 100%;
+            padding: 15px 16px 15px 46px;
+            border-radius: 14px;
+            border: 1.5px solid rgba(180,160,220,0.25);
+            background: rgb(255, 255, 255);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 500;
+            outline: none;
+            transition: var(--trans);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+        }
+
+        body.dark .field input {
+            background: rgba(255,255,255,0.08);
+            color: var(--text);
+            border-color: rgba(255,255,255,0.12);
+        }
+
+        .field input::placeholder { color: var(--sub); font-weight: 400; }
+
+        .field input:focus {
+            border-color: var(--lavender);
+            background: rgba(255,255,255,0.9);
+            box-shadow: 0 0 0 4px rgba(203,184,245,0.25), 0 4px 16px rgba(0,0,0,0.05);
+        }
+
+        body.dark .field input:focus {
+            background: rgba(255,255,255,0.12);
+        }
+
+        /* ─── Login Button ─── */
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            margin-top: 8px;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #6ec6a2 0%, #9b7fe8 100%);
+            color: white;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+            box-shadow: 0 10px 30px rgba(110,198,162,0.35);
+            transition: var(--trans);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0);
+            transition: var(--trans);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 40px rgba(110,198,162,0.45);
+        }
+
+        .btn-primary:hover::after { background: rgba(255,255,255,0.08); }
+        .btn-primary:active { transform: translateY(0); }
+
+        /* ─── Forgot Link ─── */
+        .forgot-link {
+            text-align: center;
+            margin-top: 18px;
+            font-size: 14px;
+            color: var(--sub);
+            cursor: pointer;
+            transition: var(--trans);
+            user-select: none;
+        }
+
+        .forgot-link:hover { color: var(--sage); }
+
+        /* ─── Forgot Card ─── */
+        .forgot-card {
+            display: none;
+            margin-top: 20px;
+            padding: 22px;
+            border-radius: 18px;
+            background: rgba(255,255,255,0.5);
+            border: 1px solid rgba(180,160,220,0.2);
+            animation: fadeSlide 0.4s ease both;
+        }
+
+        body.dark .forgot-card {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(255,255,255,0.1);
+        }
+
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(-10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .forgot-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 17px;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .forgot-question {
+            font-size: 13px;
+            color: var(--sub);
+            margin-bottom: 14px;
+            line-height: 1.5;
+        }
+
+        .btn-secondary {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #cbb8f5, #9b7fe8);
+            color: white;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--trans);
+            margin-top: 6px;
+        }
+
+        .btn-secondary:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(155,127,232,0.35); }
+
+        .reset-box {
+            display: none;
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(180,160,220,0.2);
+        }
+
+        /* ─── Footer ─── */
+        .footer-text {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 12.5px;
+            color: var(--sub);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .footer-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--sage);
+            display: inline-block;
+        }
+
+        /* ─── Popup ─── */
+        .popup {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #6ec6a2, #9b7fe8);
+            color: white;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 12px 30px rgba(110,198,162,0.4);
+            opacity: 0;
+            transition: 0.4s cubic-bezier(.34,1.56,.64,1);
+            z-index: 999;
+            pointer-events: none;
+        }
+
+        .popup.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ─── Misc ─── */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(180,160,220,0.3), transparent);
+            margin: 22px 0;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Background Blobs -->
+<div class="bg-wrap">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+</div>
+
+<!-- Dark Mode Toggle -->
+<div class="dark-toggle">
+    <input type="checkbox" id="darkSwitch" onclick="toggleDarkMode()">
+    <label for="darkSwitch"></label>
+</div>
+
+<!-- Login Card -->
+<div class="card">
+    <div class="card-header">
+        <div class="icon-wrap"><img class="logo" src="Mental Health Tracker LOGO.png" alt="C" srcset=""></div>
+        <h1 class="app-name">CEREVIA</h1>
+        <p class="app-tagline">Your private mental wellness space</p>
+    </div>
+
+    <div class="field">
+        <span class="field-icon"></span>
+        <input type="password" id="pin" placeholder="Enter your PIN">
+    </div>
+
+    <button class="btn-primary" onclick="login()">Sign In</button>
+
+    <p class="forgot-link" onclick="showForgot()">🔑 Forgot your PIN?</p>
+
+    <div id="forgotBox" class="forgot-card">
+        <p class="forgot-title">Verify Your Identity</p>
+        <p id="secQuestion" class="forgot-question">What is your favourite colour ?</p>
+
+        <div class="field">
+            <span class="field-icon">💬</span>
+            <input type="text" id="secAnswer" placeholder="Your answer">
+        </div>
+
+        <button class="btn-secondary" onclick="verifyAnswer()">Verify →</button>
+
+        <div id="resetBox" class="reset-box">
+            <div class="field">
+                <span class="field-icon">🔐</span>
+                <input type="password" id="newPinReset" placeholder="New PIN">
+            </div>
+            <button class="btn-primary" onclick="resetPin()">Reset PIN</button>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <p class="footer-text">
+        <span class="footer-dot"></span>
+        Your data stays safe &amp; private
+        <span class="footer-dot"></span>
+    </p>
+</div>
+
+<!-- Popup -->
+<div id="popup" class="popup">✓ Saved successfully</div>
+
+<script>
+    window.onload = function() {
+        if (typeof restoreTheme === 'function') restoreTheme();
+    };
+
+    function syncThemeToggle() {
+        const sw = document.getElementById('darkSwitch');
+        if (sw) sw.checked = document.body.classList.contains('dark');
+    }
+
+    function toggleDarkMode() {
+        const nextTheme = document.body.classList.contains('dark') ? 'light' : 'dark';
+        if (typeof setTheme === 'function') {
+            setTheme(nextTheme);
+        } else {
+            document.body.classList.toggle('dark', nextTheme === 'dark');
+            localStorage.setItem('theme', nextTheme);
+            syncThemeToggle();
+        }
+    }
+
+    function restoreTheme() {
+        const isDark = localStorage.getItem('theme') === 'dark';
+        document.body.classList.toggle('dark', isDark);
+        syncThemeToggle();
+    }
+
+    window.addEventListener('storage', function (event) {
+        if (event.key === 'theme') restoreTheme();
+    });
+
+    function showForgot() {
+        const box = document.getElementById('forgotBox');
+        box.style.display = box.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Stubs — wire to app.js
+    function login() { if (typeof window.appLogin === 'function') window.appLogin(); }
+    function verifyAnswer() { if (typeof window.appVerify === 'function') window.appVerify(); }
+    function resetPin() { if (typeof window.appReset === 'function') window.appReset(); }
+
+    restoreTheme();
+</script>
+<script src="app.js" defer></script>
+</body>
+</html>

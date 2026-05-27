@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>CEREVIA — Breathing Practice</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --mint:#a8f0d8;
+    --sage:#6ec6a2;
+    --lavender:#cbb8f5;
+    --violet:#9b7fe8;
+    --cream:#fef9f4;
+    --text:#2c2438;
+    --sub:#7b6f8a;
+    --glass:rgba(255,255,255,0.55);
+    --shadow:0 20px 60px rgba(100,80,140,0.14);
+    --radius-lg:26px;
+    --radius-md:16px;
+    --trans:.35s cubic-bezier(.4,0,.2,1);
+    --font-display:'DM Serif Display', serif;
+    --font-body:'DM Sans', sans-serif;
+}
+
+body.dark{
+    --cream:#16121f;
+    --text:#f0eaf8;
+    --sub:#b0a0c8;
+    --glass:rgba(30,24,46,0.62);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+    font-family:var(--font-body);
+    background:var(--cream);
+    color:var(--text);
+    min-height:100vh;
+    transition:var(--trans);
+}
+
+/* Background blobs */
+.bg-wrap{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+.blob{position:absolute;border-radius:50%;filter:blur(80px);opacity:.4;animation:drift 16s infinite ease-in-out;}
+.blob-1{width:600px;height:600px;background:#c3f4e4;top:-180px;left:-150px;}
+.blob-2{width:480px;height:480px;background:#e4d4fc;bottom:-120px;right:-100px;}
+.blob-3{width:380px;height:380px;background:#fcd4e8;top:40%;left:52%;}
+@keyframes drift{
+0%,100%{transform:translate(0,0) scale(1);}
+33%{transform:translate(30px,-24px) scale(1.04);}
+66%{transform:translate(-20px,22px) scale(.97);}
+}
+
+/* Nav */
+.top-nav{
+    position:sticky;top:0;z-index:10;
+    display:flex;justify-content:space-between;align-items:center;
+    padding:16px 32px;
+    background:var(--glass);
+    backdrop-filter:blur(20px);
+    border-bottom:1px solid rgba(180,160,220,.18);
+}
+
+.nav-logo{
+    font-family:var(--font-display);
+    font-size:20px;
+}
+
+.nav-links a{
+    padding:8px 16px;
+    border-radius:50px;
+    text-decoration:none;
+    color:var(--sub);
+    transition:var(--trans);
+}
+.nav-links a:hover{
+    background:rgba(180,160,220,.15);
+    color:var(--text);
+}
+
+/* Main container */
+.container{
+    position:relative;
+    z-index:5;
+    max-width:700px;
+    margin:80px auto;
+    text-align:center;
+}
+
+.title{
+    font-family:var(--font-display);
+    font-size:38px;
+}
+
+.subtitle{
+    color:var(--sub);
+    margin-top:6px;
+}
+
+/* Circle */
+.breathing-wrap{
+    margin:60px 0;
+    display:flex;
+    justify-content:center;
+}
+
+.circle{
+    width:220px;
+    height:220px;
+    border-radius:50%;
+    background:linear-gradient(135deg,var(--sage),var(--violet));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:white;
+    font-family:var(--font-display);
+    font-size:22px;
+    transition:transform 4s ease-in-out;
+    box-shadow:0 20px 50px rgba(110,198,162,.4);
+}
+
+.circle.expand{
+    transform:scale(1.4);
+}
+
+/* Buttons */
+.controls{
+    margin-top:30px;
+}
+
+.btn{
+    padding:12px 24px;
+    border:none;
+    border-radius:50px;
+    font-weight:600;
+    cursor:pointer;
+    margin:6px;
+    background:linear-gradient(135deg,var(--sage),var(--violet));
+    color:white;
+    transition:var(--trans);
+}
+.btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 12px 28px rgba(100,80,140,.2);
+}
+
+.session-count{
+    margin-top:25px;
+    font-size:14px;
+    color:var(--sub);
+}
+
+</style>
+</head>
+<body>
+
+<div class="bg-wrap">
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+</div>
+
+<nav class="top-nav">
+<div class="nav-logo">🫁 CEREVIA</div>
+<div class="nav-links">
+<a href="dashboard.html">Dashboard</a>
+</div>
+</nav>
+
+<div class="container">
+<h1 class="title">Breathing Practice</h1>
+<p class="subtitle">Follow the rhythm and relax 🌿</p>
+
+<div class="breathing-wrap">
+<div class="circle" id="circle">Ready</div>
+</div>
+
+<div class="controls">
+<button class="btn" onclick="startBreathing()">Start</button>
+<button class="btn" onclick="stopBreathing()">Stop</button>
+<button class="btn" onclick="resetSessions()">Reset</button>
+</div>
+
+<div class="session-count">
+Completed Cycles: <span id="sessionCount">0</span>
+</div>
+</div>
+
+<script>
+let interval = null;
+let phaseIndex = 0;
+let cycleTracker = 0;
+
+let sessions = parseInt(localStorage.getItem("breathingSessions")) || 0;
+document.getElementById("sessionCount").innerText = sessions;
+
+const phases = ["Inhale","Hold","Exhale","Hold"];
+const durations = [4000,4000,4000,4000];
+
+function startBreathing(){
+    if(interval) return; // prevent multiple intervals
+
+    const circle = document.getElementById("circle");
+
+    function runPhase(){
+        circle.innerText = phases[phaseIndex];
+
+        if(phaseIndex === 0){
+            circle.classList.add("expand");
+        }
+        if(phaseIndex === 2){
+            circle.classList.remove("expand");
+            cycleTracker++;
+
+            if(cycleTracker === 1){
+                sessions++;
+                localStorage.setItem("breathingSessions", sessions);
+                document.getElementById("sessionCount").innerText = sessions;
+                cycleTracker = 0;
+            }
+        }
+
+        phaseIndex = (phaseIndex + 1) % phases.length;
+    }
+
+    runPhase();
+    interval = setInterval(runPhase, 4000);
+}
+
+function stopBreathing(){
+    clearInterval(interval);
+    interval = null;
+    phaseIndex = 0;
+    cycleTracker = 0;
+    document.getElementById("circle").classList.remove("expand");
+    document.getElementById("circle").innerText = "Paused";
+}
+
+function resetSessions(){
+    sessions = 0;
+    localStorage.setItem("breathingSessions", 0);
+    document.getElementById("sessionCount").innerText = 0;
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+    if(typeof restoreTheme === "function"){
+        restoreTheme();
+    } else {
+        if(localStorage.getItem("theme")==="dark"){
+            document.body.classList.add("dark");
+        }
+    }
+});
+</script>
+
+</body>
+</html>

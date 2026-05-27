@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotional Quotient | Cerevia</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --mint:#a8f0d8;
+            --sage:#6ec6a2;
+            --lavender:#cbb8f5;
+            --violet:#9b7fe8;
+            --cream:#fef9f4;
+            --text:#2c2438;
+            --sub:#7b6f8a;
+            --glass:rgba(255,255,255,0.55);
+            --shadow:0 20px 60px rgba(100,80,140,0.14);
+            --radius-lg:26px;
+            --radius-md:16px;
+            --trans:0.35s cubic-bezier(.4,0,.2,1);
+            --font-display:'DM Serif Display', serif;
+            --font-body:'DM Sans', sans-serif;
+        }
+
+        body.dark{
+            --cream:#16121f;
+            --text:#f0eaf8;
+            --sub:#b0a0c8;
+            --glass:rgba(30,24,46,0.62);
+            --shadow:0 20px 60px rgba(0,0,0,0.45);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: var(--font-body);
+            color: var(--text);
+            background: var(--cream);
+            transition: background var(--trans), color var(--trans);
+        }
+
+        .bg-wrap {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: blobDrift 16s ease-in-out infinite;
+        }
+
+        .blob-1 { width: 600px; height: 600px; background: #c3f4e4; top: -180px; left: -150px; animation-delay: 0s; }
+        .blob-2 { width: 480px; height: 480px; background: #e4d4fc; bottom: -120px; right: -100px; animation-delay: -6s; }
+        .blob-3 { width: 380px; height: 380px; background: #fcd4e8; top: 40%; left: 52%; animation-delay: -11s; }
+
+        body.dark .blob-1 { background: #112e42; opacity: 0.55; }
+        body.dark .blob-2 { background: #28144c; opacity: 0.55; }
+        body.dark .blob-3 { background: #3a1228; opacity: 0.45; }
+
+        @keyframes blobDrift {
+            0%,100% { transform: translate(0,0) scale(1); }
+            33% { transform: translate(30px,-24px) scale(1.04); }
+            66% { transform: translate(-20px,22px) scale(0.97); }
+        }
+
+        .top-nav {
+            position:sticky;top:0;z-index:10;
+            display:flex;justify-content:space-between;align-items:center;
+            padding:16px 32px;
+            background:var(--glass);
+            backdrop-filter:blur(20px);
+            border-bottom:1px solid rgba(180,160,220,.18);
+            box-shadow:0 4px 18px rgba(100,80,140,.08);
+        }
+
+        .nav-logo {
+            font-family:var(--font-display);
+            font-size:21px;
+            color:var(--text);
+            letter-spacing:-.3px;
+            display:flex;
+            align-items:center;
+            gap:10px;
+            text-decoration:none;
+        }
+
+        .nav-logo-icon .logo {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+        }
+
+        .nav-actions { display:flex; align-items:center; gap:10px; }
+
+        .dark-toggle input { display: none; }
+        .dark-toggle label {
+            width: 48px;
+            height: 26px;
+            background: rgba(180,160,220,0.25);
+            border: 1.5px solid rgba(180,160,220,0.4);
+            display: block;
+            border-radius: 50px;
+            position: relative;
+            cursor: pointer;
+            transition: var(--trans);
+        }
+
+        .dark-toggle label::before {
+            content: "☀️";
+            font-size: 11px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            border-radius: 50%;
+            transition: var(--trans);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+        }
+
+        .dark-toggle input:checked + label {
+            background: rgba(106,17,203,0.35);
+            border-color: rgba(106,17,203,0.5);
+        }
+
+        .dark-toggle input:checked + label::before {
+            content: "🌙";
+            transform: translateX(22px);
+        }
+
+        .back-btn, .ghost-btn {
+            padding:8px 18px;
+            border-radius:50px;
+            border:1px solid rgba(180,160,220,.2);
+            background:rgba(255,255,255,.35);
+            color:var(--text);
+            font:600 13.5px var(--font-body);
+            cursor:pointer;
+            transition:var(--trans);
+            text-decoration:none;
+        }
+
+        .back-btn:hover, .ghost-btn:hover {
+            transform:translateY(-1px);
+            box-shadow:0 6px 16px rgba(100,80,140,.14);
+        }
+
+        .page {
+            position:relative;
+            z-index:10;
+            max-width:1100px;
+            margin:0 auto;
+            padding:32px 22px 42px;
+        }
+
+        .page-header {
+            margin-bottom:22px;
+        }
+
+        .page-greeting {
+            font-size:13px;
+            font-weight:600;
+            letter-spacing:.7px;
+            text-transform:uppercase;
+            color:var(--sub);
+            margin-bottom:6px;
+        }
+
+        .page-title {
+            margin:0 0 10px;
+            font-family:var(--font-display);
+            font-size:36px;
+            color:var(--text);
+            letter-spacing:-.8px;
+            line-height:1.1;
+        }
+
+        .page-title span {
+            background:linear-gradient(135deg, var(--sage), var(--violet));
+            -webkit-background-clip:text;
+            -webkit-text-fill-color:transparent;
+            background-clip:text;
+        }
+
+        .subtitle {
+            margin:0;
+            max-width:760px;
+            color:var(--sub);
+            font-size:15px;
+            line-height:1.7;
+        }
+
+        .hero-grid {
+            display:grid;
+            grid-template-columns: minmax(0,1.25fr) minmax(280px,.75fr);
+            gap:18px;
+            margin-bottom:18px;
+        }
+
+        .mood-panel, .state-card, .resource-card {
+            background:var(--glass);
+            border-radius:var(--radius-lg);
+            padding:24px;
+            backdrop-filter:blur(20px);
+            -webkit-backdrop-filter:blur(20px);
+            border:1px solid rgba(255,255,255,.65);
+            box-shadow:var(--shadow);
+        }
+
+        body.dark .mood-panel, body.dark .state-card, body.dark .resource-card {
+            border-color:rgba(255,255,255,.09);
+            background:rgba(30,24,46,.62);
+        }
+
+        .label {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            color: var(--sub);
+            margin-bottom: 10px;
+        }
+
+        .mood-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(110, 198, 162, 0.22), rgba(155, 127, 232, 0.2));
+            font-weight: 700;
+            font-size: 1.05rem;
+        }
+
+        .meta {
+            margin-top: 14px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .meta-chip {
+            padding: 8px 12px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            color: var(--sub);
+            font-size: 13px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        body.dark .meta-chip {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .state-card h2 {
+            margin: 0 0 10px;
+            font-size: 1.05rem;
+        }
+
+        .state-card p {
+            margin: 0;
+            color: var(--sub);
+            line-height: 1.65;
+            font-size: 0.96rem;
+        }
+
+        .resources-grid {
+            display:grid;
+            grid-template-columns:repeat(2, minmax(0, 1fr));
+            gap:18px;
+        }
+
+        .resource-card h3 {
+            margin:0 0 14px;
+            font-family:var(--font-display);
+            font-size:20px;
+            color:var(--text);
+        }
+
+        .resource-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 12px;
+        }
+
+        .resource-item {
+            border:1px solid rgba(180,160,220,.14);
+            border-radius:var(--radius-md);
+            padding:14px 15px;
+            background:rgba(255,255,255,.32);
+            line-height:1.55;
+            color:var(--text);
+        }
+
+        body.dark .resource-item {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .resource-link {
+            color: inherit;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .resource-link:hover {
+            text-decoration: underline;
+        }
+
+        .resource-kind {
+            display: block;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: var(--sub);
+            margin-bottom: 6px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .empty-text {
+            color: var(--sub);
+            line-height: 1.65;
+        }
+
+        .loading {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loading::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            transform: translateX(-100%);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.32), transparent);
+            animation: shimmer 1.4s infinite;
+        }
+
+        body.dark .loading::after {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+        }
+
+        @keyframes shimmer {
+            100% { transform: translateX(100%); }
+        }
+
+        @media (max-width: 860px) {
+            .hero-grid, .resources-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .top-nav { padding:14px 18px; flex-direction:column; align-items:stretch; }
+            .nav-actions { flex-wrap:wrap; }
+            .nav-actions > * { flex:1 1 auto; }
+            .page { padding:26px 18px 34px; }
+            .page-title { font-size:30px; }
+        }
+    </style>
+</head>
+<body>
+<div class="bg-wrap">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+</div>
+
+<nav class="top-nav">
+    <a class="nav-logo" href="dashboard.html">
+        <div class="nav-logo-icon"><img class="logo" src="Mental Health Tracker LOGO.png" alt="Cerevia logo"></div>
+        CEREVIA
+    </a>
+    <div class="nav-actions">
+        <button class="back-btn" onclick="goBack()">Back to dashboard</button>
+        <button class="ghost-btn" id="refreshBtn" type="button">Refresh insights</button>
+        <div class="dark-toggle">
+            <input type="checkbox" id="darkSwitch" onclick="toggleDarkMode()">
+            <label for="darkSwitch"></label>
+        </div>
+    </div>
+</nav>
+
+<div class="page">
+    <section class="page-header">
+        <p class="page-greeting">Emotional Growth</p>
+        <h1 class="page-title">Boost your <span>emotional quotient</span></h1>
+        <p class="subtitle">
+            This space reads your most recent mood check-in, then surfaces articles, videos, activities, and music that can help you strengthen awareness, regulation, and resilience.
+        </p>
+    </section>
+
+    <section class="hero-grid">
+        <div class="mood-panel loading" id="moodPanel">
+            <div class="label">Latest mood</div>
+            <div class="mood-badge" id="moodBadge">Loading mood...</div>
+            <div class="meta">
+                <div class="meta-chip" id="moodDate">Looking up your latest check-in</div>
+                <div class="meta-chip" id="moodLevel">Matching EQ resources</div>
+            </div>
+        </div>
+
+        <div class="state-card" id="stateCard">
+            <h2 id="stateTitle">Preparing your EQ plan</h2>
+            <p id="stateText">We are matching your latest mood with the most relevant support from the EQ resource library.</p>
+        </div>
+    </section>
+
+    <section class="resources-grid" id="resourcesGrid">
+        <article class="resource-card loading">
+            <h3>Articles</h3>
+        </article>
+        <article class="resource-card loading">
+            <h3>Videos</h3>
+        </article>
+        <article class="resource-card loading">
+            <h3>Activities</h3>
+        </article>
+        <article class="resource-card loading">
+            <h3>Songs</h3>
+        </article>
+    </section>
+</div>
+
+<script src="app.js" defer></script>
+<script>
+const API_URL = "http://127.0.0.1:5000";
+
+const categoryConfig = [
+    { key: "articles", title: "Articles", type: "link" },
+    { key: "videos", title: "Videos", type: "link" },
+    { key: "activities", title: "Activities", type: "text" },
+    { key: "songs", title: "Songs", type: "link" }
+];
+
+function goBack() {
+    window.location.href = "dashboard.html";
+}
+
+function toggleDarkMode() {
+    if (typeof setTheme === "function") {
+        setTheme(document.body.classList.contains("dark") ? "light" : "dark");
+    } else {
+        document.body.classList.toggle("dark");
+        localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+        const darkSwitch = document.getElementById("darkSwitch");
+        if (darkSwitch) {
+            darkSwitch.checked = document.body.classList.contains("dark");
+        }
+    }
+}
+
+function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    }[char]));
+}
+
+function prettifyMood(mood) {
+    return mood || "Neutral";
+}
+
+function safeArray(value) {
+    return Array.isArray(value) ? value.filter(Boolean) : [];
+}
+
+function renderResourceCard(config, items) {
+    const listItems = safeArray(items);
+    const content = listItems.length
+        ? `<ul class="resource-list">${listItems.map((item, index) => {
+            if (config.type === "link") {
+                const url = escapeHtml(item);
+                return `<li class="resource-item"><span class="resource-kind">${config.title.slice(0, -1)} ${index + 1}</span><a class="resource-link" href="${url}" target="_blank" rel="noopener noreferrer">${url}</a></li>`;
+            }
+            return `<li class="resource-item">${escapeHtml(item)}</li>`;
+        }).join("")}</ul>`
+        : `<p class="empty-text">No ${config.title.toLowerCase()} are available for this mood yet.</p>`;
+
+    return `
+        <article class="resource-card">
+            <h3>${config.title}</h3>
+            ${content}
+        </article>
+    `;
+}
+
+function renderResources(resources) {
+    const grid = document.getElementById("resourcesGrid");
+    grid.innerHTML = categoryConfig
+        .map(config => renderResourceCard(config, resources ? resources[config.key] : []))
+        .join("");
+}
+
+function setState(title, text) {
+    document.getElementById("stateTitle").textContent = title;
+    document.getElementById("stateText").textContent = text;
+}
+
+function applyMoodSummary(data) {
+    const moodPanel = document.getElementById("moodPanel");
+    moodPanel.classList.remove("loading");
+
+    const displayMood = prettifyMood(data.displayMood || data.latestMood);
+    document.getElementById("moodBadge").textContent = data.hasMood
+        ? `Latest mood: ${displayMood}`
+        : "No mood logged yet";
+    document.getElementById("moodDate").textContent = data.date
+        ? `Logged on: ${data.date}`
+        : "Log a mood entry to personalise this page";
+    document.getElementById("moodLevel").textContent = Number.isFinite(Number(data.level))
+        ? `Intensity level: ${Number(data.level)}/10`
+        : "Using a balanced EQ starter set";
+
+    if (!data.hasMood) {
+        setState(
+            "Start with your first check-in",
+            "No mood entry was found yet, so Cerevia is showing the neutral EQ starter set. Add a mood from the Mood page to get a more tailored plan."
+        );
+        return;
+    }
+
+    setState(
+        `Support built for ${displayMood}`,
+        `These resources were selected from your EQ library to help you respond to your latest emotional state with more awareness and steadiness.`
+    );
+}
+
+async function loadEQ() {
+    const refreshBtn = document.getElementById("refreshBtn");
+    refreshBtn.disabled = true;
+    refreshBtn.textContent = "Refreshing...";
+
+    try {
+        const response = await fetch(`${API_URL}/eq/resources`);
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        applyMoodSummary(data);
+        renderResources(data.resources || {});
+
+        if (data.error) {
+            setState("Resource library issue", data.error);
+        }
+    } catch (error) {
+        document.getElementById("moodPanel").classList.remove("loading");
+        document.getElementById("moodBadge").textContent = "Unable to load EQ insights";
+        document.getElementById("moodDate").textContent = "Backend connection failed";
+        document.getElementById("moodLevel").textContent = "Try again after starting the server";
+        setState(
+            "We could not reach the EQ service",
+            "The page could not fetch your latest mood or the EQ resource library. Make sure the backend is running, then refresh this page."
+        );
+        renderResources({});
+    } finally {
+        refreshBtn.disabled = false;
+        refreshBtn.textContent = "Refresh insights";
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    if (typeof restoreTheme === "function") {
+        restoreTheme();
+    }
+    if (typeof requireAuth === "function") {
+        requireAuth();
+    }
+
+    const darkSwitch = document.getElementById("darkSwitch");
+    if (darkSwitch) {
+        darkSwitch.checked = document.body.classList.contains("dark");
+    }
+
+    document.getElementById("refreshBtn").addEventListener("click", loadEQ);
+    loadEQ();
+});
+
+window.addEventListener("storage", event => {
+    if (event.key === "theme" && typeof restoreTheme === "function") {
+        restoreTheme();
+    }
+});
+</script>
+</body>
+</html>

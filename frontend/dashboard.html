@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>CEREVIA — Dashboard</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+    <style>
+        /* ── Dashboard-specific overrides ── */
+        :root {
+            --mint:     #a8f0d8;
+            --sage:     #6ec6a2;
+            --lavender: #cbb8f5;
+            --violet:   #9b7fe8;
+            --cream:    #fef9f4;
+            --text:     #2c2438;
+            --sub:      #7b6f8a;
+            --glass:    rgba(255,255,255,0.55);
+            --shadow:   0 20px 60px rgba(100,80,140,0.14);
+            --radius-lg: 26px;
+            --radius-md: 16px;
+            --trans:    0.35s cubic-bezier(.4,0,.2,1);
+            --font-display: 'DM Serif Display', serif;
+            --font-body:    'DM Sans', sans-serif;
+        }
+
+        body.dark {
+            --cream:  #16121f;
+            --text:   #f0eaf8;
+            --sub:    #b0a0c8;
+            --glass:  rgba(30,24,46,0.6);
+            --shadow: 0 20px 60px rgba(0,0,0,0.45);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--cream);
+            color: var(--text);
+            min-height: 100vh;
+            transition: background var(--trans), color var(--trans);
+            animation: pageFadeIn 0.5s ease both;
+        }
+
+        @keyframes pageFadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Background blobs ── */
+        .bg-wrap {
+            position: fixed; inset: 0; z-index: 0;
+            overflow: hidden; pointer-events: none;
+        }
+        .blob {
+            position: absolute; border-radius: 50%;
+            filter: blur(80px); opacity: 0.4;
+            animation: blobDrift 16s ease-in-out infinite;
+        }
+        .blob-1 { width: 600px; height: 600px; background: #c3f4e4; top: -180px; left: -150px; animation-delay: 0s; }
+        .blob-2 { width: 480px; height: 480px; background: #e4d4fc; bottom: -120px; right: -100px; animation-delay: -6s; }
+        .blob-3 { width: 380px; height: 380px; background: #fcd4e8; top: 40%; left: 52%; animation-delay: -11s; }
+
+        body.dark .blob-1 { background: #112e42; opacity: 0.55; }
+        body.dark .blob-2 { background: #28144c; opacity: 0.55; }
+        body.dark .blob-3 { background: #3a1228; opacity: 0.45; }
+
+        @keyframes blobDrift {
+            0%,100% { transform: translate(0,0) scale(1); }
+            33%      { transform: translate(30px,-24px) scale(1.04); }
+            66%      { transform: translate(-20px,22px) scale(0.97); }
+        }
+
+        /* ── Top Nav ── */
+        .top-nav {
+            position: sticky; top: 0; z-index: 50;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 32px;
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            border-bottom: 1px solid rgba(180,160,220,0.18);
+            box-shadow: 0 4px 24px rgba(100,80,140,0.07);
+        }
+
+        body.dark .top-nav {
+            background: rgba(22,18,31,0.72);
+            border-bottom-color: rgba(255,255,255,0.07);
+        }
+
+        .nav-logo {
+            font-family: var(--font-display);
+            font-size: 21px;
+            color: var(--text);
+            letter-spacing: -0.3px;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .nav-logo-icon .logo{
+            width: 34px; height: 34px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 17px;
+        }
+
+        .nav-links {
+            display: flex; align-items: center; gap: 4px;
+        }
+
+        .nav-links a {
+            padding: 7px 14px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--sub);
+            transition: var(--trans);
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text);
+            background: rgba(180,160,220,0.15);
+        }
+
+        body.dark .nav-links a { color: rgba(240,234,248,0.6); }
+        body.dark .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.08); }
+
+        .nav-logout {
+            margin-left: 8px;
+            padding: 8px 18px;
+            border-radius: 50px;
+            border: 1.5px solid rgba(220,80,80,0.22);
+            background: rgba(220,80,80,0.09);
+            color: #d04040;
+            font-size: 13.5px;
+            font-weight: 600;
+            font-family: var(--font-body);
+            cursor: pointer;
+            transition: var(--trans);
+        }
+
+        .nav-logout:hover { background: rgba(220,80,80,0.18); transform: scale(1.03); }
+
+        /* ── Dark toggle inside nav ── */
+        .dark-toggle { display: flex; align-items: center; margin-left: 16px; }
+        .dark-toggle input { display: none; }
+        .dark-toggle label {
+            width: 48px; height: 26px;
+            background: rgba(180,160,220,0.25);
+            border: 1.5px solid rgba(180,160,220,0.4);
+            display: block; border-radius: 50px;
+            position: relative; cursor: pointer; transition: var(--trans);
+        }
+        .dark-toggle label::before {
+            content: "☀️"; font-size: 11px;
+            width: 20px; height: 20px;
+            background: white; position: absolute;
+            top: 2px; left: 2px; border-radius: 50%;
+            transition: var(--trans);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+        }
+        .dark-toggle input:checked + label { background: rgba(106,17,203,0.35); border-color: rgba(106,17,203,0.5); }
+        .dark-toggle input:checked + label::before { content: "🌙"; transform: translateX(22px); }
+
+        /* ── Page header ── */
+        .page-header {
+            position: relative; z-index: 10;
+            padding: 36px 36px 8px;
+        }
+
+        .page-greeting {
+            font-size: 13.5px;
+            font-weight: 500;
+            color: var(--sub);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-size: 36px;
+            color: var(--text);
+            letter-spacing: -0.8px;
+            line-height: 1.1;
+        }
+
+        .page-title span {
+            background: linear-gradient(135deg, var(--sage), var(--violet));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ── Dashboard Grid ── */
+        .dashboard-grid {
+            position: relative; z-index: 10;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 20px;
+            padding: 28px 36px 40px;
+        }
+
+        /* ── Base Card ── */
+        .dash-card {
+            background: var(--glass);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.65);
+            box-shadow: var(--shadow);
+            transition: transform var(--trans), box-shadow var(--trans);
+            animation: cardFadeIn 0.6s ease both;
+        }
+
+        body.dark .dash-card {
+            border-color: rgba(255,255,255,0.09);
+            background: rgba(30,24,46,0.62);
+        }
+
+        .dash-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 28px 64px rgba(100,80,140,0.18);
+        }
+
+        @keyframes cardFadeIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-label {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: var(--sub);
+            margin-bottom: 10px;
+            display: flex; align-items: center; gap: 6px;
+        }
+
+        .card-label-dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--sage), var(--violet));
+        }
+
+        .card-title {
+            font-family: var(--font-display);
+            font-size: 18px;
+            color: var(--text);
+            margin-bottom: 14px;
+        }
+
+        /* ── Grid Sizing ── */
+        .col-3  { grid-column: span 3; }
+        .col-4  { grid-column: span 4; }
+        .col-5  { grid-column: span 5; }
+        .col-6  { grid-column: span 6; }
+        .col-7  { grid-column: span 7; }
+        .col-8  { grid-column: span 8; }
+        .col-12 { grid-column: span 12; }
+
+        /* ── Progress Ring ── */
+        .ring-wrap {
+            display: flex; align-items: center; gap: 24px;
+        }
+
+        .progress-ring {
+            position: relative;
+            width: 110px; height: 110px;
+            flex-shrink: 0;
+        }
+
+        .progress-ring svg {
+            width: 110px; height: 110px;
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring circle {
+            fill: none; stroke-width: 11; stroke-linecap: round;
+        }
+
+        .progress-ring circle.bg { stroke: rgba(180,160,220,0.18); }
+        .progress-ring circle.progress {
+            stroke: url(#ringGrad);
+            stroke-dasharray: 282;
+            stroke-dashoffset: 282;
+            transition: stroke-dashoffset 1.6s cubic-bezier(.4,0,.2,1);
+        }
+
+        .ring-text {
+            position: absolute;
+            inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-family: var(--font-display);
+            font-size: 22px;
+            color: var(--text);
+        }
+
+        .ring-info { flex: 1; }
+        .ring-big {
+            font-family: var(--font-display);
+            font-size: 38px;
+            background: linear-gradient(135deg, var(--sage), var(--violet));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+
+        .ring-label {
+            font-size: 13px;
+            color: var(--sub);
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        /* ── Stat Cards ── */
+        .stat-value {
+            font-family: var(--font-display);
+            font-size: 44px;
+            line-height: 1;
+            margin: 8px 0 4px;
+            background: linear-gradient(135deg, var(--sage), var(--violet));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-sub {
+            font-size: 12.5px;
+            color: var(--sub);
+            font-weight: 500;
+        }
+
+        /* ── Weekly Chart ── */
+        .chart-container {
+            margin-top: 16px;
+        }
+
+        .weekly-chart {
+            display: flex;
+            align-items: flex-end;
+            height: 160px;
+            gap: 10px;
+            padding: 0 4px;
+            background: rgba(255,255,255,0.3);
+            border-radius: var(--radius-md);
+            padding: 16px 16px 0;
+            border: 1px solid rgba(180,160,220,0.12);
+        }
+
+        body.dark .weekly-chart {
+            background: rgba(255,255,255,0.04);
+        }
+
+        .bar {
+            flex: 1; height: 100%;
+            display: flex; flex-direction: column;
+            justify-content: flex-end; align-items: center;
+        }
+
+        .bar-inner {
+            width: 100%; min-height: 6px;
+            border-radius: 8px 8px 0 0;
+            background: linear-gradient(180deg, var(--sage) 0%, var(--violet) 100%);
+            transition: height 0.75s cubic-bezier(.4,0,.2,1);
+            box-shadow: 0 -4px 12px rgba(110,198,162,0.28);
+        }
+
+        .bar-value {
+            margin-top: 7px; font-size: 11px;
+            font-weight: 600; color: var(--text);
+        }
+
+        .bar-label {
+            margin-top: 3px; font-size: 10.5px;
+            color: var(--sub); font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        /* ── Suggestion Card ── */
+        .suggestion-text {
+            font-size: 15px;
+            width: 170px;
+            line-height: 1.65;
+            color: var(--sub);
+            margin-top: 6px;
+        }
+
+        .suggestion-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 13px;
+            background: linear-gradient(135deg, rgba(168,240,216,0.35), rgba(203,184,245,0.35));
+            border: 1px solid rgba(180,160,220,0.2);
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 14px;
+        }
+
+        /* ── Emergency Card ── */
+        .emergency-card {
+            border: 2px solid rgba(220,50,50,0.35) !important;
+            background: rgba(255,230,230,0.45) !important;
+        }
+
+        body.dark .emergency-card {
+            background: rgba(80,20,20,0.45) !important;
+        }
+
+        .emergency-label { color: #c53030 !important; }
+        .emergency-label .card-label-dot { background: #e05050; }
+
+        .emergency-text {
+            font-size: 14px;
+            color: var(--sub);
+            margin-bottom: 14px;
+            line-height: 1.5;
+        }
+
+        .emergency-btn-card {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, #e05050, #c03030);
+            color: white;
+            font-size: 15px;
+            font-weight: 700;
+            font-family: var(--font-body);
+            cursor: pointer;
+            box-shadow: 0 8px 22px rgba(220,50,50,0.35);
+            animation: pulseBorder 2s infinite ease-in-out;
+            transition: var(--trans);
+        }
+
+        @keyframes pulseBorder {
+            0%,100% { box-shadow: 0 8px 22px rgba(220,50,50,0.35); }
+            50%      { box-shadow: 0 12px 32px rgba(220,50,50,0.55); }
+        }
+
+        .emergency-btn-card:hover { transform: translateY(-2px); }
+
+        /* ── Quick Action Buttons ── */
+        .quick-actions {
+            position: relative; z-index: 10;
+            display: flex;
+            gap: 12px;
+            padding: 0 36px 32px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            display: flex; align-items: center; gap: 8px;
+            padding: 12px 22px;
+            background: var(--glass);
+            border: 1px solid rgba(255,255,255,0.6);
+            border-radius: 50px;
+            font-family: var(--font-body);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            transition: var(--trans);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 6px 18px rgba(100,80,140,0.1);
+            text-decoration: none;
+        }
+
+        body.dark .action-btn {
+            border-color: rgba(255,255,255,0.09);
+            background: rgba(30,24,46,0.55);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(100,80,140,0.18);
+            border-color: rgba(180,160,220,0.4);
+        }
+
+        .action-btn .ab-icon {
+            width: 28px; height: 28px;
+            background: linear-gradient(135deg, rgba(168,240,216,0.5), rgba(203,184,245,0.5));
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px;
+        }
+
+        /* ── Popup ── */
+        .popup {
+            position: fixed; bottom: 32px; left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            padding: 13px 30px;
+            background: linear-gradient(135deg, var(--sage), var(--violet));
+            color: white; border-radius: 50px;
+            font-size: 14px; font-weight: 600;
+            box-shadow: 0 14px 34px rgba(110,198,162,0.38);
+            opacity: 0;
+            transition: 0.45s cubic-bezier(.34,1.56,.64,1);
+            z-index: 9999; pointer-events: none;
+        }
+
+        .popup.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* ── Chat Toggle ── */
+        .chat-toggle {
+            position: fixed; bottom: 28px; right: 28px;
+            background: linear-gradient(135deg, var(--sage), var(--violet));
+            color: white; padding: 14px 24px;
+            border-radius: 50px; cursor: pointer;
+            font-weight: 700; font-size: 14px;
+            font-family: var(--font-body);
+            box-shadow: 0 12px 32px rgba(110,198,162,0.45);
+            transition: var(--trans); z-index: 1000; border: none;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .chat-toggle:hover { transform: scale(1.07); }
+
+        .chat-pulse {
+            width: 9px; height: 9px; border-radius: 50%;
+            background: white; opacity: 0.85;
+            animation: pulseDot 1.6s infinite ease-in-out;
+        }
+
+        @keyframes pulseDot {
+            0%,100% { transform: scale(1); opacity: 0.85; }
+            50%      { transform: scale(1.4); opacity: 0.4; }
+        }
+
+        /* ── Chatbot ── */
+        .chatbot {
+            position: fixed; bottom: 92px; right: 28px;
+            width: 400px; height: 540px;
+            background: rgba(254,249,244,0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            border: 1px solid rgba(180,160,220,0.2);
+            box-shadow: 0 32px 72px rgba(100,80,140,0.28);
+            display: flex; flex-direction: column;
+            overflow: hidden;
+            animation: pageFadeIn 0.3s ease;
+            z-index: 1000;
+        }
+
+        body.dark .chatbot {
+            background: rgba(22,18,31,0.97);
+            border-color: rgba(255,255,255,0.09);
+        }
+
+        .hidden { display: none !important; }
+
+        .chat-header {
+            background: linear-gradient(135deg, #4e0dc5, #1a68f0);
+            color: white; padding: 18px 20px;
+            font-family: var(--font-display);
+            font-size: 18px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        #chat-close { cursor: pointer; opacity: 0.8; transition: var(--trans); font-size: 18px; }
+        #chat-close:hover { opacity: 1; transform: scale(1.15); }
+
+        .chat-messages {
+            flex: 1; padding: 18px;
+            overflow-y: auto; display: flex;
+            flex-direction: column; gap: 12px;
+        }
+
+        .user-msg {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #4e0dc5, #1a68f0);
+            color: white; padding: 11px 16px;
+            border-radius: 18px 18px 4px 18px;
+            max-width: 80%; font-size: 14.5px;
+            font-weight: 500; line-height: 1.5;
+        }
+
+        .bot-msg {
+            align-self: flex-start;
+            background: rgba(248,246,252,0.95);
+            color: var(--text); padding: 11px 16px;
+            border-radius: 18px 18px 18px 4px;
+            max-width: 80%; font-size: 14.5px;
+            font-weight: 500; line-height: 1.5;
+            border: 1px solid rgba(180,160,220,0.2);
+        }
+
+        body.dark .bot-msg { background: rgba(255,255,255,0.08); }
+
+        .chat-input-area {
+            display: flex; padding: 14px; gap: 10px;
+            background: rgba(248,246,252,0.9);
+            border-top: 1px solid rgba(180,160,220,0.16);
+        }
+
+        body.dark .chat-input-area {
+            background: rgba(22,18,31,0.9);
+            border-top-color: rgba(255,255,255,0.07);
+        }
+        .eq-btn {
+    margin-top: 12px;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 50px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    background: linear-gradient(135deg, var(--sage), var(--violet));
+    color: white;
+    box-shadow: 0 6px 18px rgba(110,198,162,0.35);
+    transition: var(--trans);
+}
+
+.eq-btn:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 12px 28px rgba(110,198,162,0.45);
+}
+        .chat-input-area input {
+            flex: 1; padding: 11px 14px;
+            border-radius: 12px; border: 1.5px solid rgba(180,160,220,0.25);
+            background: rgba(255,255,255,0.85);
+            font-family: var(--font-body); font-size: 14px; color: var(--text);
+            outline: none; transition: var(--trans);
+        }
+
+        body.dark .chat-input-area input {
+            background: rgba(255,255,255,0.08); color: var(--text);
+        }
+
+        .chat-input-area input:focus {
+            border-color: var(--lavender);
+            box-shadow: 0 0 0 3px rgba(203,184,245,0.2);
+        }
+
+        .chat-input-area button {
+            padding: 11px 18px; border: none; border-radius: 12px;
+            font-size: 13.5px; font-weight: 700; font-family: var(--font-body);
+            background: linear-gradient(135deg, var(--sage), var(--violet));
+            color: white; cursor: pointer; transition: var(--trans);
+            box-shadow: 0 6px 14px rgba(110,198,162,0.38);
+        }
+
+        .chat-input-area button:hover { transform: scale(1.06); }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(180,160,220,0.28); border-radius: 8px; }
+    </style>
+</head>
+<body>
+
+<!-- Background -->
+<div class="bg-wrap">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+</div>
+
+<!-- SVG Gradient for ring -->
+<svg width="0" height="0" style="position:absolute">
+    <defs>
+        <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#6ec6a2"/>
+            <stop offset="100%" stop-color="#9b7fe8"/>
+        </linearGradient>
+    </defs>
+</svg>
+
+<!-- Navigation -->
+<nav class="top-nav">
+    <div class="nav-logo">
+        <div class="nav-logo-icon"><img class="logo" src="Mental Health Tracker LOGO.png" alt="C" srcset=""></div>
+        CEREVIA
+    </div>
+    <div class="nav-links">
+        <a href="dashboard.html" class="active">Dashboard</a>
+        <a href="mood.html">Mood</a>
+        <a href="journal.html">Journal</a>
+        <a href="settings.html">Settings</a>
+        <button class="nav-logout" onclick="logout()">Sign out</button>
+        <div class="dark-toggle">
+            <input type="checkbox" id="darkSwitch" onclick="toggleDarkMode()">
+            <label for="darkSwitch"></label>
+        </div>
+    </div>
+</nav>
+
+<!-- Page Header -->
+<div class="page-header">
+    <p class="page-greeting">Good day 🌤</p>
+    <h1 class="page-title">Your <span>Wellness</span> Dashboard</h1>
+</div>
+
+<!-- Dashboard Grid -->
+<div class="dashboard-grid">
+
+    <!-- Mood Ring — col 4 -->
+    <div class="dash-card col-4" style="animation-delay:.05s">
+        <div class="card-label">
+            <span class="card-label-dot"></span> Mood Score
+        </div>
+        <div class="ring-wrap">
+            <div class="progress-ring">
+                <svg>
+                    <circle class="bg" cx="55" cy="55" r="45"></circle>
+                    <circle class="progress" cx="55" cy="55" r="45"></circle>
+                </svg>
+                <div class="ring-text" id="moodPercent">0%</div>
+            </div>
+            <div class="ring-info">
+                <div class="ring-big" id="avgMoodBig">—</div>
+                <div class="ring-label">Average mood<br>this week</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Journal Count — col 4 -->
+    <div class="dash-card col-4" style="animation-delay:.1s">
+        <div class="card-label">
+            <span class="card-label-dot"></span> Journal
+        </div>
+        <div class="stat-value" id="journalCount">0</div>
+        <div class="stat-sub">entries recorded</div>
+        <div style="margin-top:16px; height:4px; border-radius:4px; background: linear-gradient(90deg, var(--sage), var(--violet)); opacity:0.5;"></div>
+    </div>
+
+    <!-- Frequent Mood — col 4 -->
+    <div class="dash-card col-4" style="animation-delay:.15s">
+        <div class="card-label">
+            <span class="card-label-dot"></span> Most Frequent
+        </div>
+        <div class="stat-value" id="mostFrequentMood" style="font-size:48px; -webkit-text-fill-color: initial; background: none; color: var(--text);">—</div>
+        <div class="stat-sub">dominant mood</div>
+    </div>
+
+    <!-- Latest Mood — col 3 -->
+    <div class="dash-card col-3" style="animation-delay:.2s">
+        <div class="card-label">
+            <span class="card-label-dot"></span> Latest
+        </div>
+        <div class="stat-value" id="latestMoodText" style="font-size:48px; -webkit-text-fill-color: initial; background: none; color: var(--text);">—</div>
+        <div class="stat-sub">most recent mood</div>
+    </div>
+
+    <!-- Today's Suggestion — col 9 -->
+    <div class="dash-card col-9" style="animation-delay:.25s">
+        <div class="suggestion-chip">💡 Today's suggestion</div>
+        <p class="suggestion-text" id="suggestionText">Loading your personalised wellness suggestion…</p>
+    </div>
+
+    <div class="dash-card col-9" style="animation-delay:.25s">
+        <div class="suggestion-chip">Feeling Tensed ?</div>
+        <p class="suggestion-text"><button class="action-btn" onclick="window.location='breathing.html'">
+        <span class="ab-icon">🫁</span> Start Breathing Practice
+    </button></p>
+    </div>
+
+    <div class="dash-card col-3">
+    <div class="card-label">
+        <span class="card-label-dot"></span>
+        Emotional Growth
+    </div>
+
+    <div class="card-title">Boost Your EQ</div>
+
+    <p class="suggestion-text">
+        Improve emotional awareness and intelligence.
+    </p>
+
+    <button class="eq-btn" onclick="openEQ()">
+        Explore Now →
+    </button>
+</div>
+
+    <!-- Weekly Chart — col 12 -->
+    <div class="dash-card col-12" style="animation-delay:.3s">
+        <div class="card-label">
+            <span class="card-label-dot"></span> Weekly Mood Trend
+        </div>
+        <div class="chart-container">
+            <div id="weeklyChart" class="weekly-chart"></div>
+        </div>
+    </div>
+
+    <!-- Emergency Box (hidden by default) -->
+    <div id="emergencyBox" class="dash-card col-12 emergency-card" style="display:none; animation-delay:.35s">
+        <div class="card-label emergency-label">
+            <span class="card-label-dot"></span> 🚨 Emergency Alert
+        </div>
+        <p class="emergency-text">We noticed you might be in emotional distress. You're not alone — help is available right now.</p>
+        <button class="emergency-btn-card" onclick="callEmergency()">📞 Contact Emergency Support</button>
+    </div>
+
+</div>
+
+<!-- Quick Actions -->
+<div class="quick-actions">
+    <button class="action-btn" onclick="window.location='mood.html'">
+        <span class="ab-icon">🌈</span> Log Mood
+    </button>
+    <button class="action-btn" onclick="window.location='journal.html'">
+        <span class="ab-icon">📘</span> Write Journal
+    </button>
+    <button class="action-btn" onclick="window.location='settings.html'">
+        <span class="ab-icon">⚙️</span> Settings
+    </button>
+    <button class="action-btn" onclick="window.location='index.html'">
+        <span class="ab-icon">⬅️</span> Back
+    </button>
+</div>
+
+<!-- Popup -->
+<div id="popup" class="popup"></div>
+
+<!-- Chat Toggle -->
+<button id="chat-toggle" class="chat-toggle" onclick="document.getElementById('chatbot').classList.toggle('hidden')">
+    <span class="chat-pulse"></span> How are you feeling?
+</button>
+
+<!-- Chatbot -->
+<div id="chatbot" class="chatbot hidden">
+    <div class="chat-header">
+        🌿 CEREVIA ASSISTANT
+        <span id="chat-close">✕</span>
+    </div>
+    <div id="chat-messages" class="chat-messages"></div>
+    <div class="chat-input-area">
+        <input type="text" id="chat-input" placeholder="Type your message…">
+        <button id="sendBtn" type="button">Send</button>
+    </div>
+</div>
+
+<script src="app.js" defer></script>
+<script>
+    
+    document.addEventListener("DOMContentLoaded", function () {
+        if (typeof restoreTheme === "function") restoreTheme();
+        if (typeof requireAuth === "function") requireAuth();
+        if (typeof updateDashboard === "function") updateDashboard();
+    });
+
+
+    function toggleDarkMode() {
+        if (typeof setTheme === "function") {
+            setTheme(document.body.classList.contains('dark') ? 'light' : 'dark');
+        } else {
+            document.body.classList.toggle('dark');
+            localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+        }
+    }
+
+    window.addEventListener('storage', function (event) {
+        if (event.key === 'theme' && typeof restoreTheme === 'function') {
+            restoreTheme();
+        }
+    });
+
+    
+
+    // Close chat on ✕
+    document.getElementById('chat-close').addEventListener('click', function () {
+        document.getElementById('chatbot').classList.add('hidden');
+    });
+
+    restoreTheme();
+</script>
+</body>
+</html>

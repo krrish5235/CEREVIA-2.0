@@ -1,0 +1,66 @@
+{
+  "Happy": [
+    "Keep spreading positivity today!",
+    "Do something creative and enjoy the moment.",
+    "Share your happiness with someone.",
+    "Celebrate the small wins of today.",
+    "Capture this moment in your journal.",
+    "Spread kindness to someone today.",
+    "Try something fun like drawing or music.",
+    "Take a walk outside and enjoy nature.",
+    "Call a friend and share your good mood.",
+    "Keep doing what makes you feel this way."
+  ],
+
+  "Sad": [
+    "It's okay to feel sad. Take some rest today.",
+    "Try listening to calming music.",
+    "Talking to someone you trust can help.",
+    "Write your feelings in your journal.",
+    "Take a slow walk and clear your mind.",
+    "Watch something comforting or uplifting.",
+    "Remember that this feeling will pass.",
+    "Practice deep breathing for a few minutes.",
+    "Drink some water and take care of yourself.",
+    "Be kind to yourself today."
+  ],
+
+  "Angry": [
+    "Take deep breaths and step away for a moment.",
+    "A short walk can help clear your mind.",
+    "Try writing your feelings in your journal.",
+    "Pause before reacting to the situation.",
+    "Stretch your body to release tension.",
+    "Listen to calming music to relax.",
+    "Focus on your breathing for a minute.",
+    "Try a short meditation session.",
+    "Channel your energy into something productive.",
+    "Give yourself some time before responding."
+  ],
+
+  "Anxious": [
+    "Try a 4-7-8 breathing exercise.",
+    "Focus on something small and positive.",
+    "Take a few slow deep breaths.",
+    "Ground yourself by noticing your surroundings.",
+    "Write down your worries to clear your mind.",
+    "Take a short break and relax.",
+    "Drink water and slow your breathing.",
+    "Practice mindfulness for a few minutes.",
+    "Listen to calming sounds or music.",
+    "Remind yourself that you are safe."
+  ],
+
+  "Neutral": [
+    "Reflect on something positive today.",
+    "Try something new today.",
+    "Stay mindful and present.",
+    "Take a few minutes to relax and breathe.",
+    "Plan something enjoyable for later today.",
+    "Write one thing you are grateful for.",
+    "Stretch your body for a few minutes.",
+    "Take a short walk outside.",
+    "Listen to your favorite song.",
+    "Set a small goal for the day."
+  ]
+}

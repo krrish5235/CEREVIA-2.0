@@ -1,0 +1,5 @@
+# 1) Build backend
+cmake --build backend/build --config Debug
+
+# 2) Run backend
+.\backend\build\Debug\backend.exe

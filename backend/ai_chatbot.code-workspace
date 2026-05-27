@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "../ai_chatbot"
+		},
+		{
+			"path": "."
+		},
+		{
+			"path": "../database"
+		},
+		{
+			"path": "../frontend"
+		}
+	]
+}

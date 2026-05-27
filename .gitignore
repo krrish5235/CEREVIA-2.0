@@ -1,0 +1,17 @@
+# Ignore virtual env
+.venv/
+
+# Ignore build files
+build/
+
+# Ignore database
+*.db
+
+# Ignore VS Code settings
+.vscode/
+
+# OS files
+.DS_Store
+
+# Logs
+*.log

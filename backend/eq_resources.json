@@ -1,0 +1,105 @@
+{
+  "Happy": {
+    "articles": [
+      "https://positivepsychology.com/happiness/",
+      "https://www.healthline.com/health/how-to-be-happy"
+    ],
+    "videos": [
+      "https://www.youtube.com/watch?v=3GwjfUFyY6M"
+    ],
+    "activities": [
+      "Celebrate your achievements",
+      "Share your happiness with someone",
+      "Try something creative like art or music"
+    ],
+    "songs": [
+      "https://www.youtube.com/watch?v=OPf0YbXqDm0"
+    ]
+  },
+
+  "Sad": {
+    "articles": [
+      "https://www.helpguide.org/articles/depression/coping-with-depression.htm"
+    ],
+    "videos": [
+      "https://www.youtube.com/watch?v=ZToicYcHIOU"
+    ],
+    "activities": [
+      "Write your feelings in a journal",
+      "Take a peaceful walk",
+      "Talk to someone you trust"
+    ],
+    "songs": [
+      "https://www.youtube.com/watch?v=2Vv-BfVoq4g"
+    ]
+  },
+
+  "Angry": {
+    "articles": [
+      "https://www.verywellmind.com/how-to-control-anger-5120202"
+    ],
+    "videos": [
+      "https://www.youtube.com/watch?v=BsVq5R_F6RA"
+    ],
+    "activities": [
+      "Take deep breaths",
+      "Go for a short run",
+      "Write down what made you angry"
+    ],
+    "songs": [
+      "https://www.youtube.com/watch?v=fLexgOxsZu0"
+    ]
+  },
+
+  "Anxious": {
+    "articles": [
+      "https://www.anxietycanada.com/articles/self-help-strategies-for-anxiety/"
+    ],
+    "videos": [
+      "https://www.youtube.com/watch?v=O-6f5wQXSu8"
+    ],
+    "activities": [
+      "Practice 4-7-8 breathing",
+      "Ground yourself with surroundings",
+      "Meditate for 5 minutes"
+    ],
+    "songs": [
+      "https://www.youtube.com/watch?v=1ZYbU82GVz4"
+    ]
+  },
+
+  "Neutral": {
+    "articles": [
+      "https://www.mindful.org/meditation/mindfulness-getting-started/"
+    ],
+    "videos": [
+      "https://www.youtube.com/watch?v=inpok4MKVLM"
+    ],
+    "activities": [
+      "Plan your day",
+      "Take a short walk",
+      "Reflect on goals"
+    ],
+    "songs": [
+      "https://www.youtube.com/watch?v=5qap5aO4i9A"
+    ]
+  },
+
+  "Calm": {
+    "articles": [
+      "https://www.mindful.org/how-to-calm-down/",
+      "https://www.healthline.com/health/how-to-stay-calm"
+    ],
+    "videos": [
+      "https://www.youtube.com/watch?v=aXItOY0sLRY"
+    ],
+    "activities": [
+      "Spend ten quiet minutes noticing your breath",
+      "Stretch gently and release tension from your shoulders",
+      "Write down what helped you feel balanced today"
+    ],
+    "songs": [
+      "https://www.youtube.com/watch?v=lFcSrYw-ARY"
+    ]
+  }
+}
