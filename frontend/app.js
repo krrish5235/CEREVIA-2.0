@@ -1,3 +1,9 @@
+// ═══════════════════════════════════════════════════════════════
+// CEREVIA — Frontend Application Logic
+// Handles auth, API calls, dashboard, mood, journal, chatbot,
+// theme management, and Java analytics integration.
+// ═══════════════════════════════════════════════════════════════
+
 // GLOBAL ROUTE PROTECTION
 // Immediately checks if user is logged in.
 // If not logged in and page is protected, redirects to login page.
@@ -13,8 +19,12 @@
     }
 })();
 
-//Settting up the link on local server before hand so that it connects to the backend correctly and on the correct port
-const API_URL = "http://127.0.0.1:5000";
+// ─── API Configuration ─────────────────────────────────────────
+const API_URL = "http://127.0.0.1:5000";           // C++ Core Backend
+const CHATBOT_URL = "http://127.0.0.1:5001";       // Python AI Chatbot
+const ANALYTICS_URL = "http://127.0.0.1:8080";     // Java Analytics Service
+
+// ─── Utility Functions ─────────────────────────────────────────
 
 async function fetchJSON(path, options = {}) {
     const res = await fetch(`${API_URL}${path}`, options);
@@ -22,6 +32,17 @@ async function fetchJSON(path, options = {}) {
         throw new Error(`HTTP ${res.status}`);
     }
     return res.json();
+}
+
+async function fetchAnalytics(path) {
+    try {
+        const res = await fetch(`${ANALYTICS_URL}${path}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+    } catch (err) {
+        console.warn(`Analytics service unavailable: ${err.message}`);
+        return null;
+    }
 }
 
 // Displays popup toast message on screen
@@ -34,96 +55,7 @@ function showPopup(msg) {
     setTimeout(() => popup.classList.remove("show"), 2000);
 }
 
-// Resets mood history from backend database
-// Calls backend API to delete all mood records
-function resetMood() {
-    if (!confirm("Delete all mood history?")) return;
-    fetch(`${API_URL}/mood/reset`, { method: "POST" })
-        .then(r => r.json())
-        .then(d => {
-            showPopup("Mood history cleared ✅");
-            loadMoods();
-        });
-}
-
-// Resets journal history from backend database
-// Calls backend API to delete all journal entries
-function resetJournal() {
-    if (!confirm("Delete all journal entries?")) return;
-    fetch(`${API_URL}/journal/reset`, { method: "POST" })
-        .then(r => r.json())
-        .then(d => {
-            showPopup("Journal cleared ✅");
-            loadJournal();
-        });
-}
-
-// Checks crisis status from backend
-// Shows emergency box if crisis detected
-function checkCrisisStatus() {
-    return fetch(`${API_URL}/stats/crisis`)
-        .then(r => r.json())
-        .then(d => {
-            const box = document.getElementById("emergencyBox");
-            const el = document.getElementById("suggestionText");
-            const emergencyText = box ? box.querySelector(".emergency-text") : null;
-
-            if (d.crisis) {
-                if (box) box.style.display = "block";
-                if (el && d.message) {
-                    el.textContent = d.message;
-                }
-                if (emergencyText && d.contact) {
-                    emergencyText.textContent = `Crisis detected after 3 consecutive Sad/Angry moods. Please contact a doctor now at ${d.contact}.`;
-                }
-            } else {
-                if (box) box.style.display = "none";
-            }
-        });
-}
-
-// Fetches emergency contact number from backend
-// Redirects user to call that number
-function callEmergency() {
-    fetch(`${API_URL}/emergency/contact`)
-        .then(r => r.json())
-        .then(d => {
-            const number = d.contact;
-            if (number) {
-                window.location.href = `tel:${number}`;
-            } else {
-                showPopup("No emergency contact configured.");
-            }
-        })
-        .catch(() => {
-            showPopup("Unable to fetch emergency contact.");
-        });
-}
-
-// Toggles dark/light theme from settings page
-// Saves theme preference in localStorage
-function toggleThemeFromSettings() {
-    const isDark = document.body.classList.toggle("dark");
-    localStorage.setItem("theme", isDark ? "dark" : "light");
-    showPopup(isDark ? "Dark Mode Enabled 🌙" : "Light Mode Enabled ☀️");
-}
-
-// Sets loggedIn status in localStorage
-function restoreTheme() {
-    const theme = localStorage.getItem("theme");
-    if (theme === "dark") {
-        document.body.classList.add("dark");
-    } else {
-        document.body.classList.remove("dark");
-    }
-}
-
-function syncThemeControls() {
-    const isDark = document.body.classList.contains("dark");
-    document.querySelectorAll("#darkSwitch").forEach(control => {
-        control.checked = isDark;
-    });
-}
+// ─── Theme Management (Single Source of Truth) ──────────────────
 
 function applyTheme(theme) {
     if (theme === "dark") {
@@ -140,14 +72,21 @@ function setTheme(theme) {
     applyTheme(normalizedTheme);
 }
 
+function restoreTheme() {
+    applyTheme(localStorage.getItem("theme") === "dark" ? "dark" : "light");
+}
+
 function toggleThemeFromSettings() {
     const nextTheme = document.body.classList.contains("dark") ? "light" : "dark";
     setTheme(nextTheme);
-    showPopup(nextTheme === "dark" ? "Dark Mode Enabled ðŸŒ™" : "Light Mode Enabled â˜€ï¸");
+    showPopup(nextTheme === "dark" ? "Dark Mode Enabled 🌙" : "Light Mode Enabled ☀️");
 }
 
-function restoreTheme() {
-    applyTheme(localStorage.getItem("theme") === "dark" ? "dark" : "light");
+function syncThemeControls() {
+    const isDark = document.body.classList.contains("dark");
+    document.querySelectorAll("#darkSwitch").forEach(control => {
+        control.checked = isDark;
+    });
 }
 
 window.addEventListener("storage", event => {
@@ -156,19 +95,19 @@ window.addEventListener("storage", event => {
     }
 });
 
+// ─── Auth Functions ─────────────────────────────────────────────
+
 // Sets loggedIn status in localStorage
 function setLoggedIn(v) {
     localStorage.setItem("loggedIn", v ? "true" : "false");
 }
 
 // Checks if user is logged in
-// Returns boolean
 function isLoggedIn() {
     return localStorage.getItem("loggedIn") === "true";
 }
 
 // Ensures authentication before accessing protected pages
-// Redirects to login if not authenticated
 function requireAuth() {
     const loggedIn = localStorage.getItem("loggedIn");
     console.log("AUTH CHECK:", loggedIn);
@@ -180,8 +119,7 @@ function requireAuth() {
     }
 }
 
-// Ensures authentication before accessing protected pages
-// Redirects to login if not authenticated
+// Logs user out and redirects to login
 function logout() {
     localStorage.removeItem("loggedIn");
     window.location.href = "index.html";
@@ -251,7 +189,6 @@ function resetPin() {
 }
 
 // Handles login process
-// Sends PIN to backend and authenticates user
 function login() {
     console.log("LOGIN START");
     const pinEl = document.getElementById("pin");
@@ -303,8 +240,20 @@ function registerPin() {
         .catch(() => showPopup("Backend error"));
 }
 
-// Adds new mood entry locally in localStorage
-// Updates dashboard immediately
+// ─── Mood Functions ─────────────────────────────────────────────
+
+// Resets mood history from backend database
+function resetMood() {
+    if (!confirm("Delete all mood history?")) return;
+    fetch(`${API_URL}/mood/reset`, { method: "POST" })
+        .then(r => r.json())
+        .then(d => {
+            showPopup("Mood history cleared ✅");
+            loadMoods();
+        });
+}
+
+// Adds new mood entry
 function addMood() {
     const moodBtn = document.querySelector(".mood-btn.selected");
     const level = document.getElementById("level").value;
@@ -337,46 +286,8 @@ function addMood() {
     .catch(() => showPopup("Backend error"));
 }
 
-// Renders all mood entries from localStorage
-// Displays them on mood page
 function renderMoods() {
     loadMoods();
-}
-
-function calculateWeeklyAverage() {
-    return 0;
-}
-
-let cachedSuggestion = null;
-
-function updateSuggestion() {
-    const suggestionEl = document.getElementById("suggestionText");
-    if (!suggestionEl) return Promise.resolve();
-
-    if (cachedSuggestion) {
-        suggestionEl.textContent = cachedSuggestion;
-        return Promise.resolve();
-    }
-
-    return fetchJSON("/suggestion/today")
-        .then(d => {
-            cachedSuggestion = d.message || "Take care of yourself today.";
-            suggestionEl.textContent = cachedSuggestion;
-        })
-        .catch(() => {
-            suggestionEl.textContent = "Unable to load suggestion.";
-        });
-}
-function updateJournalCount() {
-    const el = document.getElementById("journalCount");
-    if (!el) return Promise.resolve();
-    return fetchJSON("/journal/count")
-        .then(d => {
-            el.textContent = Number.isFinite(d.count) ? d.count : 0;
-        })
-        .catch(() => {
-            el.textContent = "0";
-        });
 }
 
 function loadMoods() {
@@ -406,6 +317,25 @@ function loadMoods() {
         .catch(() => showPopup("Error loading moods"));
 }
 
+function getAllMoods() {
+    return fetchJSON("/mood/all")
+        .then(rows => rows || [])
+        .catch(() => []);
+}
+
+// ─── Journal Functions ──────────────────────────────────────────
+
+// Resets journal history from backend database
+function resetJournal() {
+    if (!confirm("Delete all journal entries?")) return;
+    fetch(`${API_URL}/journal/reset`, { method: "POST" })
+        .then(r => r.json())
+        .then(d => {
+            showPopup("Journal cleared ✅");
+            loadJournal();
+        });
+}
+
 function saveJournal() {
     const entryEl = document.getElementById("entry");
     const text = entryEl.value.trim();
@@ -424,7 +354,7 @@ function saveJournal() {
     })
     .then(res => res.json())
     .then(data => {
-        showPopup("Journal saved ?");
+        showPopup("Journal saved ✅");
         loadJournal();
         updateDashboard();
     })
@@ -460,8 +390,80 @@ function deleteJournal(index) {
     showPopup("Delete is not supported from backend history view.");
 }
 
-function getAllMoods() {
-    return [];
+// ─── Dashboard Functions ────────────────────────────────────────
+
+// Checks crisis status from backend
+// Shows emergency box if crisis detected
+function checkCrisisStatus() {
+    return fetch(`${API_URL}/stats/crisis`)
+        .then(r => r.json())
+        .then(d => {
+            const box = document.getElementById("emergencyBox");
+            const el = document.getElementById("suggestionText");
+            const emergencyText = box ? box.querySelector(".emergency-text") : null;
+
+            if (d.crisis) {
+                if (box) box.style.display = "block";
+                if (el && d.message) {
+                    el.textContent = d.message;
+                }
+                if (emergencyText && d.contact) {
+                    emergencyText.textContent = `Crisis detected after 3 consecutive Sad/Angry moods. Please contact a doctor now at ${d.contact}.`;
+                }
+            } else {
+                if (box) box.style.display = "none";
+            }
+        });
+}
+
+// Fetches emergency contact number from backend
+function callEmergency() {
+    fetch(`${API_URL}/emergency/contact`)
+        .then(r => r.json())
+        .then(d => {
+            const number = d.contact;
+            if (number) {
+                window.location.href = `tel:${number}`;
+            } else {
+                showPopup("No emergency contact configured.");
+            }
+        })
+        .catch(() => {
+            showPopup("Unable to fetch emergency contact.");
+        });
+}
+
+let cachedSuggestion = null;
+
+function updateSuggestion() {
+    const suggestionEl = document.getElementById("suggestionText");
+    if (!suggestionEl) return Promise.resolve();
+
+    if (cachedSuggestion) {
+        suggestionEl.textContent = cachedSuggestion;
+        return Promise.resolve();
+    }
+
+    return fetchJSON("/suggestion/today")
+        .then(d => {
+            cachedSuggestion = d.message || "Take care of yourself today.";
+            suggestionEl.textContent = cachedSuggestion;
+        })
+        .catch(() => {
+            suggestionEl.textContent = "Unable to load suggestion.";
+        });
+}
+
+function updateJournalCount() {
+    const el = document.getElementById("journalCount");
+    if (!el) return Promise.resolve();
+    return fetchJSON("/journal/count")
+        .then(d => {
+            el.textContent = Number.isFinite(d.count) ? d.count : 0;
+        })
+        .catch(() => {
+            el.textContent = "0";
+        });
 }
 
 function updateLatestMood() {
@@ -541,6 +543,61 @@ function updateWeeklyChart() {
         });
 }
 
+function calculateWeeklyAverage() {
+    return fetchAnalytics("/api/analytics/trends")
+        .then(data => {
+            if (!data || !data.values || data.values.length === 0) return 0;
+            const sum = data.values.reduce((a, b) => a + b, 0);
+            return Math.round(sum / data.values.length);
+        })
+        .catch(() => 0);
+}
+
+// ─── Java Analytics Integration ─────────────────────────────────
+
+function updateAnalyticsDashboard() {
+    // Streaks
+    fetchAnalytics("/api/analytics/streaks").then(data => {
+        if (!data) return;
+        const streakEl = document.getElementById("positiveStreak");
+        const journalStreakEl = document.getElementById("journalStreak");
+        if (streakEl) streakEl.textContent = data.currentPositiveStreak || 0;
+        if (journalStreakEl) journalStreakEl.textContent = data.journalStreak || 0;
+    });
+
+    // Prediction
+    fetchAnalytics("/api/analytics/predict").then(data => {
+        if (!data) return;
+        const predMoodEl = document.getElementById("predictedMood");
+        const predConfEl = document.getElementById("predictionConfidence");
+        const predBasisEl = document.getElementById("predictionBasis");
+        if (predMoodEl) predMoodEl.textContent = data.predictedMood || "--";
+        if (predConfEl) predConfEl.textContent = data.confidence ? Math.round(data.confidence * 100) + "%" : "--";
+        if (predBasisEl) predBasisEl.textContent = data.basedOn || "";
+    });
+
+    // Trends
+    fetchAnalytics("/api/analytics/trends").then(data => {
+        if (!data) return;
+        const trendEl = document.getElementById("moodTrend");
+        if (trendEl) {
+            const trendIcons = { improving: "📈", declining: "📉", stable: "➡️" };
+            trendEl.textContent = `${trendIcons[data.trend] || "➡️"} ${data.trend || "stable"}`;
+        }
+    });
+
+    // Summary report
+    fetchAnalytics("/api/analytics/weekly-report").then(data => {
+        if (!data) return;
+        const insightsEl = document.getElementById("analyticsInsights");
+        if (insightsEl && data.insights && data.insights.length > 0) {
+            insightsEl.innerHTML = data.insights
+                .map(i => `<div class="insight-item">💡 ${i}</div>`)
+                .join("");
+        }
+    });
+}
+
 function updateDashboard() {
     return Promise.all([
         updateLatestMood(),
@@ -550,18 +607,22 @@ function updateDashboard() {
         updateWeeklyChart(),
         updateJournalCount(),
         checkCrisisStatus()
-    ]).catch(() => {});
+    ]).then(() => {
+        // Load analytics data (non-blocking — if Java service is down, dashboard still works)
+        updateAnalyticsDashboard();
+    }).catch(() => {});
 }
 
-// =============================================================================================================================
-//=====================================================AI CHATBOT===============================================================
-// Sends message to AI backend server
-// Handles chatbot communication
+// ═══════════════════════════════════════════════════════════════
+// AI CHATBOT (Python + Gemini LLM)
+// ═══════════════════════════════════════════════════════════════
+
 async function sendMessage() {
     const input = document.getElementById("chat-input");
     const message = input.value.trim();
     if (!message) return;
     const chatBox = document.getElementById("chat-messages");
+
     // Create user bubble
     const userDiv = document.createElement("div");
     userDiv.className = "user-msg";
@@ -569,31 +630,64 @@ async function sendMessage() {
     chatBox.appendChild(userDiv);
     input.value = "";
     chatBox.scrollTop = chatBox.scrollHeight;
+
+    // Show typing indicator
+    const typingDiv = document.createElement("div");
+    typingDiv.className = "bot-msg typing-indicator";
+    typingDiv.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+    chatBox.appendChild(typingDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+
     try {
-        const response = await fetch("http://127.0.0.1:5001/chat", {
+        const response = await fetch(`${CHATBOT_URL}/chat`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ message })
         });
         const data = await response.json();
+
+        // Remove typing indicator
+        typingDiv.remove();
+
         const botDiv = document.createElement("div");
         botDiv.className = "bot-msg";
-        botDiv.innerText = data.response;
+
+        // Add emotion badge if available
+        if (data.emotion && data.emotion !== "neutral" && data.emotion !== "greeting" && data.emotion !== "farewell") {
+            const badge = document.createElement("span");
+            badge.className = `emotion-badge emotion-${data.emotion}`;
+            badge.textContent = data.emotion;
+            botDiv.appendChild(badge);
+            botDiv.appendChild(document.createElement("br"));
+        }
+
+        botDiv.appendChild(document.createTextNode(data.response));
+
+        // Show source indicator (Gemini vs Template)
+        if (data.source === "gemini") {
+            const srcTag = document.createElement("span");
+            srcTag.className = "source-tag gemini-tag";
+            srcTag.textContent = "✨ AI";
+            botDiv.appendChild(srcTag);
+        }
+
         chatBox.appendChild(botDiv);
         chatBox.scrollTop = chatBox.scrollHeight;
     } catch (error) {
+        typingDiv.remove();
         const botDiv = document.createElement("div");
         botDiv.className = "bot-msg";
         botDiv.innerText = "Unable to connect to AI server.";
         chatBox.appendChild(botDiv);
     }
 }
+
 function initDashboard() {
     cachedSuggestion = null;
     updateDashboard();
 }
-// Handles chatbot open/close behavior
-// Initializes chatbot UI state
+
+// ─── Chatbot UI Init ────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", function () {
     const toggle = document.getElementById("chat-toggle");
     const chatbot = document.getElementById("chatbot");
@@ -612,10 +706,17 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("chat-messages").innerHTML = "";
     });
     sendBtn.addEventListener("click", sendMessage);
+
+    // Send on Enter key
+    const chatInput = document.getElementById("chat-input");
+    if (chatInput) {
+        chatInput.addEventListener("keypress", function (e) {
+            if (e.key === "Enter") sendMessage();
+        });
+    }
 });
 
-// Runs on page load
-// Renders moods and updates dashboard
+// ─── Page Load Initialization ───────────────────────────────────
 window.addEventListener("DOMContentLoaded", () => {
     const page = window.location.pathname.toLowerCase();
     const isMoodPage = page.endsWith("/mood.html") || page.endsWith("mood.html");
@@ -624,15 +725,12 @@ window.addEventListener("DOMContentLoaded", () => {
         renderMoods();
     }
     if (isDashboardPage) {
-    initDashboard(); // load immediately
-    // When user switches back to tab
-    window.addEventListener("focus", initDashboard);
-
-    // When page becomes visible again
-    document.addEventListener("visibilitychange", () => {
-        if (!document.hidden) initDashboard();
-    }); 
-}
+        initDashboard();
+        window.addEventListener("focus", initDashboard);
+        document.addEventListener("visibilitychange", () => {
+            if (!document.hidden) initDashboard();
+        }); 
+    }
 });
 
 window.addEventListener("pageshow", function (event) {
@@ -640,7 +738,6 @@ window.addEventListener("pageshow", function (event) {
     const isDashboardPage =
         page.endsWith("/dashboard.html") || page.endsWith("dashboard.html");
     if (isDashboardPage) {
-        // Force refresh when returning from browser back/forward cache
         if (event.persisted) {
             location.reload();
         } else {
@@ -649,6 +746,7 @@ window.addEventListener("pageshow", function (event) {
         }
     }
 });
+
 function openEQ() {
     window.location.href = "eq.html";
 }

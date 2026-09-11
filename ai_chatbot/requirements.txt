@@ -1,0 +1,4 @@
+flask
+flask-cors
+vaderSentiment
+google-generativeai

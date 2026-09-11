@@ -15,3 +15,7 @@ build/
 
 # Logs
 *.log
+# Ignore Python cache and videos
+__pycache__/
+*.pyc
+*.mp4

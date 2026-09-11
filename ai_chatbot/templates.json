@@ -196,5 +196,34 @@
         "Thats different! Explain more?",
         "Whats the backstory here?",
         "Im intrigued  go on."
+    ],
+    "angry": [
+        "I can hear how frustrated you are. That feeling is completely valid.",
+        "It sounds like something really got under your skin. Want to talk it out?",
+        "Anger often signals that something important to you was crossed.",
+        "That frustration sounds intense. Lets take a breath together.",
+        "Its okay to feel angry. What matters is how we process it.",
+        "I can sense the heat behind your words. Whats driving that?",
+        "Sometimes anger is just hurt wearing armor.",
+        "That sounds really unfair. I understand why youd feel that way.",
+        "Lets slow down for a moment. What part made you the most upset?",
+        "Your feelings are valid even the messy angry ones.",
+        "It sounds like youve been holding this in for a while.",
+        "Anger can be exhausting. How are you really doing underneath it?",
+        "Whats the one thing that would help right now?",
+        "That sounds incredibly frustrating. Anyone would feel that way.",
+        "Lets channel that energy. What can we do about this?",
+        "I hear you. Sometimes life just pushes all the wrong buttons.",
+        "Its brave to express anger instead of bottling it up.",
+        "What would make this situation feel even slightly better?",
+        "Take a deep breath with me. In... and out. How does that feel?",
+        "Your anger tells me you care deeply about this."
+    ],
+    "crisis": [
+        "Im really concerned about you. Please reach out to a trusted person or call 14416 immediately.",
+        "You matter more than you know right now. Please call 14416 they can help.",
+        "I hear how much pain youre in. Please reach out to the helpline at 14416.",
+        "Your life has value. Please call 14416 or 112 right now someone is waiting to help you.",
+        "This sounds really serious. Please talk to someone who can help call 14416 now."
     ]
 }

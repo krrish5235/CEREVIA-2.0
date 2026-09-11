@@ -1,612 +1,297 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <title>Emotional Quotient | CEREVIA</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emotional Quotient | Cerevia</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
     <style>
         :root {
-            --mint:#a8f0d8;
-            --sage:#6ec6a2;
-            --lavender:#cbb8f5;
-            --violet:#9b7fe8;
-            --cream:#fef9f4;
-            --text:#2c2438;
-            --sub:#7b6f8a;
-            --glass:rgba(255,255,255,0.55);
-            --shadow:0 20px 60px rgba(100,80,140,0.14);
-            --radius-lg:26px;
-            --radius-md:16px;
-            --trans:0.35s cubic-bezier(.4,0,.2,1);
-            --font-display:'DM Serif Display', serif;
-            --font-body:'DM Sans', sans-serif;
+            --mint:#a8f0d8;--sage:#6ec6a2;--lavender:#cbb8f5;--violet:#9b7fe8;--cream:#e8edf5;
+            --text:#2c2438;--sub:#7b6f8a;--glass:rgba(255,255,255,0.42);--glass-border:rgba(255,255,255,0.65);
+            --shadow:0 8px 32px rgba(100,80,140,0.12);--radius:24px;--radius-sm:16px;
+            --trans:0.4s cubic-bezier(.25,.46,.45,.94);
+            --font-display:'DM Serif Display',serif;--font-body:'DM Sans',sans-serif;
         }
+        body.dark{--cream:#0f0b1a;--text:#f0eaf8;--sub:#b0a0c8;--glass:rgba(30,24,46,0.55);--glass-border:rgba(255,255,255,0.08);--shadow:0 8px 32px rgba(0,0,0,0.4);}
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:var(--font-body);color:var(--text);min-height:100vh;overflow-x:hidden;transition:background .5s,color .5s;}
 
-        body.dark{
-            --cream:#16121f;
-            --text:#f0eaf8;
-            --sub:#b0a0c8;
-            --glass:rgba(30,24,46,0.62);
-            --shadow:0 20px 60px rgba(0,0,0,0.45);
-        }
+        /* Background */
+        .scene-bg{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse at 20% 50%,rgba(168,240,216,0.4) 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(203,184,245,0.35) 0%,transparent 50%),radial-gradient(ellipse at 60% 80%,rgba(246,196,212,0.3) 0%,transparent 50%),linear-gradient(135deg,#d4e7ed 0%,#e0d6f0 40%,#dce8e0 70%,#e8ddf2 100%);}
+        body.dark .scene-bg{background:radial-gradient(ellipse at 20% 50%,rgba(17,46,66,0.6) 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(40,20,76,0.5) 0%,transparent 50%),radial-gradient(ellipse at 60% 80%,rgba(58,18,40,0.4) 0%,transparent 50%),linear-gradient(135deg,#0f0b1a 0%,#16121f 50%,#120e1a 100%);}
 
-        * { box-sizing: border-box; }
+        /* Bubbles */
+        .bubbles{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden;}
+        .bubble{position:absolute;border-radius:50%;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,0.5),rgba(200,180,240,0.15) 40%,rgba(168,240,216,0.1) 60%,transparent 70%);border:1px solid rgba(255,255,255,0.3);box-shadow:inset 0 0 20px rgba(255,255,255,0.15),0 0 40px rgba(180,160,220,0.08);animation:floatBubble var(--dur) ease-in-out infinite;}
+        .bubble::after{content:'';position:absolute;width:30%;height:30%;top:15%;left:20%;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,0.6),transparent);}
+        .bubble-1{width:80px;height:80px;top:8%;left:5%;--dur:8s;}.bubble-2{width:50px;height:50px;top:15%;right:12%;--dur:10s;animation-delay:-2s;}.bubble-3{width:120px;height:120px;bottom:20%;left:8%;--dur:12s;animation-delay:-4s;}.bubble-4{width:40px;height:40px;top:60%;right:5%;--dur:9s;animation-delay:-1s;}.bubble-5{width:65px;height:65px;bottom:10%;right:20%;--dur:11s;animation-delay:-3s;}.bubble-6{width:35px;height:35px;top:35%;left:15%;--dur:7s;animation-delay:-5s;}
+        @keyframes floatBubble{0%,100%{transform:translateY(0) translateX(0);}25%{transform:translateY(-20px) translateX(10px);}50%{transform:translateY(-8px) translateX(-15px);}75%{transform:translateY(-25px) translateX(8px);}}
 
-        body {
-            margin: 0;
-            min-height: 100vh;
-            font-family: var(--font-body);
-            color: var(--text);
-            background: var(--cream);
-            transition: background var(--trans), color var(--trans);
-        }
+        .sparkle{position:fixed;z-index:1;pointer-events:none;font-size:24px;animation:sparkleRotate 4s linear infinite;}
+        .sparkle-1{bottom:8%;right:8%;}.sparkle-2{top:45%;left:3%;animation-direction:reverse;animation-duration:6s;}
+        @keyframes sparkleRotate{0%{transform:rotate(0) scale(1);opacity:.6;}50%{transform:rotate(180deg) scale(1.2);opacity:1;}100%{transform:rotate(360deg) scale(1);opacity:.6;}}
 
-        .bg-wrap {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            overflow: hidden;
-            pointer-events: none;
-        }
+        /* Nav */
+        .top-nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 36px;background:rgba(255,255,255,0.35);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.4);box-shadow:0 4px 30px rgba(100,80,140,0.06);}
+        body.dark .top-nav{background:rgba(15,11,26,0.65);border-bottom-color:rgba(255,255,255,0.06);}
+        .nav-brand{font-family:var(--font-display);font-size:22px;color:var(--text);display:flex;align-items:center;gap:10px;text-decoration:none;}
+        .nav-brand img{width:36px;height:36px;border-radius:10px;}
+        .nav-right{display:flex;align-items:center;gap:6px;}
+        .nav-link{padding:8px 16px;border-radius:50px;text-decoration:none;font-size:14px;font-weight:500;color:var(--sub);transition:var(--trans);}
+        .nav-link:hover,.nav-link.active{color:var(--text);background:rgba(180,160,220,0.15);}
+        body.dark .nav-link{color:rgba(240,234,248,0.55);}body.dark .nav-link:hover,body.dark .nav-link.active{color:var(--text);background:rgba(255,255,255,0.08);}
+        .nav-icon-btn{width:40px;height:40px;border-radius:50%;border:1px solid rgba(180,160,220,0.2);background:var(--glass);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:var(--trans);color:var(--text);}
+        .nav-icon-btn:hover{transform:scale(1.08);box-shadow:0 4px 16px rgba(100,80,140,0.15);}
 
-        .blob {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.4;
-            animation: blobDrift 16s ease-in-out infinite;
-        }
+        /* Scene */
+        .scene{position:relative;z-index:10;perspective:1400px;padding:24px 36px 60px;}
+        .scene-3d{transform-style:preserve-3d;transform:rotateX(1deg);transition:transform .8s ease;}
+        .page-title{font-family:var(--font-display);font-size:36px;color:var(--text);text-align:center;margin-bottom:8px;transform:translateZ(30px);}
+        .page-title span{background:linear-gradient(135deg,var(--sage),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+        .page-subtitle{text-align:center;color:var(--sub);font-size:14px;max-width:600px;margin:0 auto 32px;line-height:1.6;transform:translateZ(20px);}
 
-        .blob-1 { width: 600px; height: 600px; background: #c3f4e4; top: -180px; left: -150px; animation-delay: 0s; }
-        .blob-2 { width: 480px; height: 480px; background: #e4d4fc; bottom: -120px; right: -100px; animation-delay: -6s; }
-        .blob-3 { width: 380px; height: 380px; background: #fcd4e8; top: 40%; left: 52%; animation-delay: -11s; }
+        /* Glass Card */
+        .glass-card{background:var(--glass);border-radius:var(--radius);padding:28px;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid var(--glass-border);box-shadow:var(--shadow);transition:transform var(--trans),box-shadow var(--trans);transform:translateZ(0);position:relative;overflow:hidden;animation:cardFloat .8s ease both;}
+        .glass-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent);}
+        body.dark .glass-card{border-color:rgba(255,255,255,0.07);background:rgba(30,24,46,0.5);}
+        .glass-card:hover{transform:translateZ(15px) translateY(-4px);box-shadow:0 20px 60px rgba(100,80,140,0.22);}
+        @keyframes cardFloat{from{opacity:0;transform:translateZ(-40px) translateY(30px);}to{opacity:1;transform:translateZ(0) translateY(0);}}
 
-        body.dark .blob-1 { background: #112e42; opacity: 0.55; }
-        body.dark .blob-2 { background: #28144c; opacity: 0.55; }
-        body.dark .blob-3 { background: #3a1228; opacity: 0.45; }
+        /* Hero Grid */
+        .hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;transform-style:preserve-3d;}
 
-        @keyframes blobDrift {
-            0%,100% { transform: translate(0,0) scale(1); }
-            33% { transform: translate(30px,-24px) scale(1.04); }
-            66% { transform: translate(-20px,22px) scale(0.97); }
-        }
+        /* Mood Panel */
+        .mood-panel{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;animation-delay:.05s;}
+        .mood-panel .label{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--sub);margin-bottom:8px;}
+        .mood-badge{font-family:var(--font-display);font-size:48px;color:var(--text);margin:8px 0;transition:var(--trans);}
+        .mood-panel.loading .mood-badge{background:linear-gradient(90deg,rgba(180,160,220,0.1),rgba(180,160,220,0.3),rgba(180,160,220,0.1));background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:12px;color:transparent;min-width:200px;min-height:50px;}
+        @keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+        .meta{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px;}
+        .meta-chip{padding:6px 14px;background:rgba(180,160,220,0.1);border-radius:50px;font-size:12px;color:var(--sub);font-weight:500;}
 
-        .top-nav {
-            position:sticky;top:0;z-index:10;
-            display:flex;justify-content:space-between;align-items:center;
-            padding:16px 32px;
-            background:var(--glass);
-            backdrop-filter:blur(20px);
-            border-bottom:1px solid rgba(180,160,220,.18);
-            box-shadow:0 4px 18px rgba(100,80,140,.08);
-        }
+        /* State Card */
+        .state-card{display:flex;flex-direction:column;justify-content:center;animation-delay:.1s;}
+        .state-card h2{font-family:var(--font-display);font-size:24px;color:var(--text);margin-bottom:12px;}
+        .state-card p{font-size:14px;color:var(--sub);line-height:1.65;}
 
-        .nav-logo {
-            font-family:var(--font-display);
-            font-size:21px;
-            color:var(--text);
-            letter-spacing:-.3px;
-            display:flex;
-            align-items:center;
-            gap:10px;
-            text-decoration:none;
-        }
+        /* Resources Grid */
+        .resources-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;transform-style:preserve-3d;}
 
-        .nav-logo-icon .logo {
-            width: 34px;
-            height: 34px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 17px;
-        }
+        .resource-card{animation-delay:calc(0.15s + var(--i) * 0.08s);}
+        .resource-card h3{font-family:var(--font-display);font-size:18px;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+        .resource-card h3 .res-icon{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;}
 
-        .nav-actions { display:flex; align-items:center; gap:10px; }
+        .icon-articles{background:linear-gradient(135deg,rgba(110,198,162,0.3),rgba(110,198,162,0.1));}
+        .icon-videos{background:linear-gradient(135deg,rgba(220,100,100,0.3),rgba(220,100,100,0.1));}
+        .icon-activities{background:linear-gradient(135deg,rgba(100,180,220,0.3),rgba(100,180,220,0.1));}
+        .icon-songs{background:linear-gradient(135deg,rgba(203,184,245,0.3),rgba(203,184,245,0.1));}
 
-        .dark-toggle input { display: none; }
-        .dark-toggle label {
-            width: 48px;
-            height: 26px;
-            background: rgba(180,160,220,0.25);
-            border: 1.5px solid rgba(180,160,220,0.4);
-            display: block;
-            border-radius: 50px;
-            position: relative;
-            cursor: pointer;
-            transition: var(--trans);
-        }
+        .resource-list{list-style:none;}
+        .resource-item{padding:10px 14px;margin-bottom:8px;background:rgba(255,255,255,0.25);border-radius:12px;border:1px solid rgba(180,160,220,0.08);font-size:13px;transition:var(--trans);}
+        body.dark .resource-item{background:rgba(255,255,255,0.04);}
+        .resource-item:hover{transform:translateX(4px);background:rgba(168,240,216,0.15);}
+        .resource-link{color:var(--text);text-decoration:none;font-weight:500;display:block;}
+        .resource-link:hover{color:var(--violet);}
+        .resource-kind{font-size:11px;color:var(--sub);margin-top:2px;}
+        .empty-text{font-size:13px;color:var(--sub);padding:20px 0;text-align:center;opacity:.7;}
 
-        .dark-toggle label::before {
-            content: "☀️";
-            font-size: 11px;
-            width: 20px;
-            height: 20px;
-            background: white;
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            border-radius: 50%;
-            transition: var(--trans);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.12);
-        }
+        /* Refresh Button */
+        .refresh-btn{padding:8px 20px;border-radius:50px;border:1.5px solid rgba(180,160,220,0.3);background:var(--glass);backdrop-filter:blur(10px);font-family:var(--font-body);font-size:13px;font-weight:600;color:var(--text);cursor:pointer;transition:var(--trans);}
+        .refresh-btn:hover{background:rgba(168,240,216,0.2);transform:scale(1.03);}
+        .refresh-btn:disabled{opacity:.5;cursor:not-allowed;}
 
-        .dark-toggle input:checked + label {
-            background: rgba(106,17,203,0.35);
-            border-color: rgba(106,17,203,0.5);
-        }
+        /* Popup */
+        .popup{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);padding:13px 30px;background:linear-gradient(135deg,var(--sage),var(--violet));color:white;border-radius:50px;font-size:14px;font-weight:600;box-shadow:0 14px 34px rgba(110,198,162,0.38);opacity:0;transition:.45s cubic-bezier(.34,1.56,.64,1);z-index:9999;pointer-events:none;}
+        .popup.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
-        .dark-toggle input:checked + label::before {
-            content: "🌙";
-            transform: translateX(22px);
-        }
+        ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:rgba(180,160,220,0.28);border-radius:8px;}
 
-        .back-btn, .ghost-btn {
-            padding:8px 18px;
-            border-radius:50px;
-            border:1px solid rgba(180,160,220,.2);
-            background:rgba(255,255,255,.35);
-            color:var(--text);
-            font:600 13.5px var(--font-body);
-            cursor:pointer;
-            transition:var(--trans);
-            text-decoration:none;
-        }
-
-        .back-btn:hover, .ghost-btn:hover {
-            transform:translateY(-1px);
-            box-shadow:0 6px 16px rgba(100,80,140,.14);
-        }
-
-        .page {
-            position:relative;
-            z-index:10;
-            max-width:1100px;
-            margin:0 auto;
-            padding:32px 22px 42px;
-        }
-
-        .page-header {
-            margin-bottom:22px;
-        }
-
-        .page-greeting {
-            font-size:13px;
-            font-weight:600;
-            letter-spacing:.7px;
-            text-transform:uppercase;
-            color:var(--sub);
-            margin-bottom:6px;
-        }
-
-        .page-title {
-            margin:0 0 10px;
-            font-family:var(--font-display);
-            font-size:36px;
-            color:var(--text);
-            letter-spacing:-.8px;
-            line-height:1.1;
-        }
-
-        .page-title span {
-            background:linear-gradient(135deg, var(--sage), var(--violet));
-            -webkit-background-clip:text;
-            -webkit-text-fill-color:transparent;
-            background-clip:text;
-        }
-
-        .subtitle {
-            margin:0;
-            max-width:760px;
-            color:var(--sub);
-            font-size:15px;
-            line-height:1.7;
-        }
-
-        .hero-grid {
-            display:grid;
-            grid-template-columns: minmax(0,1.25fr) minmax(280px,.75fr);
-            gap:18px;
-            margin-bottom:18px;
-        }
-
-        .mood-panel, .state-card, .resource-card {
-            background:var(--glass);
-            border-radius:var(--radius-lg);
-            padding:24px;
-            backdrop-filter:blur(20px);
-            -webkit-backdrop-filter:blur(20px);
-            border:1px solid rgba(255,255,255,.65);
-            box-shadow:var(--shadow);
-        }
-
-        body.dark .mood-panel, body.dark .state-card, body.dark .resource-card {
-            border-color:rgba(255,255,255,.09);
-            background:rgba(30,24,46,.62);
-        }
-
-        .label {
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 0.6px;
-            text-transform: uppercase;
-            color: var(--sub);
-            margin-bottom: 10px;
-        }
-
-        .mood-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 16px;
-            border-radius: 16px;
-            background: linear-gradient(135deg, rgba(110, 198, 162, 0.22), rgba(155, 127, 232, 0.2));
-            font-weight: 700;
-            font-size: 1.05rem;
-        }
-
-        .meta {
-            margin-top: 14px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .meta-chip {
-            padding: 8px 12px;
-            border-radius: 999px;
-            border: 1px solid var(--border);
-            color: var(--sub);
-            font-size: 13px;
-            font-weight: 600;
-            background: rgba(255, 255, 255, 0.25);
-        }
-
-        body.dark .meta-chip {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .state-card h2 {
-            margin: 0 0 10px;
-            font-size: 1.05rem;
-        }
-
-        .state-card p {
-            margin: 0;
-            color: var(--sub);
-            line-height: 1.65;
-            font-size: 0.96rem;
-        }
-
-        .resources-grid {
-            display:grid;
-            grid-template-columns:repeat(2, minmax(0, 1fr));
-            gap:18px;
-        }
-
-        .resource-card h3 {
-            margin:0 0 14px;
-            font-family:var(--font-display);
-            font-size:20px;
-            color:var(--text);
-        }
-
-        .resource-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: grid;
-            gap: 12px;
-        }
-
-        .resource-item {
-            border:1px solid rgba(180,160,220,.14);
-            border-radius:var(--radius-md);
-            padding:14px 15px;
-            background:rgba(255,255,255,.32);
-            line-height:1.55;
-            color:var(--text);
-        }
-
-        body.dark .resource-item {
-            background: rgba(255, 255, 255, 0.04);
-        }
-
-        .resource-link {
-            color: inherit;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .resource-link:hover {
-            text-decoration: underline;
-        }
-
-        .resource-kind {
-            display: block;
-            font-size: 12px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            color: var(--sub);
-            margin-bottom: 6px;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .empty-text {
-            color: var(--sub);
-            line-height: 1.65;
-        }
-
-        .loading {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .loading::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            transform: translateX(-100%);
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.32), transparent);
-            animation: shimmer 1.4s infinite;
-        }
-
-        body.dark .loading::after {
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
-        }
-
-        @keyframes shimmer {
-            100% { transform: translateX(100%); }
-        }
-
-        @media (max-width: 860px) {
-            .hero-grid, .resources-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .top-nav { padding:14px 18px; flex-direction:column; align-items:stretch; }
-            .nav-actions { flex-wrap:wrap; }
-            .nav-actions > * { flex:1 1 auto; }
-            .page { padding:26px 18px 34px; }
-            .page-title { font-size:30px; }
-        }
+        @media(max-width:1024px){.resources-grid{grid-template-columns:repeat(2,1fr);}}
+        @media(max-width:768px){.hero-grid,.resources-grid{grid-template-columns:1fr;}.scene{padding:16px 16px 32px;}.top-nav{padding:12px 16px;}.scene-3d{transform:none;}}
+        @media(max-width:480px){.nav-right .nav-link:not(.active){display:none;}.page-title{font-size:28px;}}
     </style>
 </head>
 <body>
-<div class="bg-wrap">
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-    <div class="blob blob-3"></div>
+<div class="scene-bg"></div>
+<div class="bubbles">
+    <div class="bubble bubble-1"></div><div class="bubble bubble-2"></div><div class="bubble bubble-3"></div>
+    <div class="bubble bubble-4"></div><div class="bubble bubble-5"></div><div class="bubble bubble-6"></div>
 </div>
+<div class="sparkle sparkle-1">✦</div>
+<div class="sparkle sparkle-2">✦</div>
 
 <nav class="top-nav">
-    <a class="nav-logo" href="dashboard.html">
-        <div class="nav-logo-icon"><img class="logo" src="Mental Health Tracker LOGO.png" alt="Cerevia logo"></div>
-        CEREVIA
+    <a class="nav-brand" href="dashboard.html">
+        <img class="logo" src="Mental Health Tracker LOGO.png" alt="CEREVIA">CEREVIA
     </a>
-    <div class="nav-actions">
-        <button class="back-btn" onclick="goBack()">Back to dashboard</button>
-        <button class="ghost-btn" id="refreshBtn" type="button">Refresh insights</button>
-        <div class="dark-toggle">
-            <input type="checkbox" id="darkSwitch" onclick="toggleDarkMode()">
-            <label for="darkSwitch"></label>
-        </div>
+    <div class="nav-right">
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="mood.html" class="nav-link">Mood</a>
+        <a href="journal.html" class="nav-link">Journal</a>
+        <a href="settings.html" class="nav-link">Settings</a>
+        <button class="refresh-btn" id="refreshBtn" type="button">🔄 Refresh insights</button>
+        <button class="nav-icon-btn" onclick="toggleThemeFromSettings()" title="Toggle theme">🌓</button>
     </div>
 </nav>
 
-<div class="page">
-    <section class="page-header">
-        <p class="page-greeting">Emotional Growth</p>
+<div class="scene">
+    <div class="scene-3d">
         <h1 class="page-title">Boost your <span>emotional quotient</span></h1>
-        <p class="subtitle">
-            This space reads your most recent mood check-in, then surfaces articles, videos, activities, and music that can help you strengthen awareness, regulation, and resilience.
-        </p>
-    </section>
+        <p class="page-subtitle">This space reads your most recent mood check-in, then surfaces articles, videos, activities, and music to strengthen awareness, regulation, and resilience.</p>
 
-    <section class="hero-grid">
-        <div class="mood-panel loading" id="moodPanel">
-            <div class="label">Latest mood</div>
-            <div class="mood-badge" id="moodBadge">Loading mood...</div>
-            <div class="meta">
-                <div class="meta-chip" id="moodDate">Looking up your latest check-in</div>
-                <div class="meta-chip" id="moodLevel">Matching EQ resources</div>
+        <section class="hero-grid">
+            <div class="glass-card mood-panel loading" id="moodPanel" style="--i:0">
+                <div class="label">Latest mood</div>
+                <div class="mood-badge" id="moodBadge">Loading mood...</div>
+                <div class="meta">
+                    <div class="meta-chip" id="moodDate">Looking up your latest check-in</div>
+                    <div class="meta-chip" id="moodLevel">Matching EQ resources</div>
+                </div>
             </div>
-        </div>
+            <div class="glass-card state-card" id="stateCard" style="--i:1">
+                <h2 id="stateTitle">Preparing your EQ plan</h2>
+                <p id="stateText">We are matching your latest mood with the most relevant support from the EQ resource library.</p>
+            </div>
+        </section>
 
-        <div class="state-card" id="stateCard">
-            <h2 id="stateTitle">Preparing your EQ plan</h2>
-            <p id="stateText">We are matching your latest mood with the most relevant support from the EQ resource library.</p>
-        </div>
-    </section>
-
-    <section class="resources-grid" id="resourcesGrid">
-        <article class="resource-card loading">
-            <h3>Articles</h3>
-        </article>
-        <article class="resource-card loading">
-            <h3>Videos</h3>
-        </article>
-        <article class="resource-card loading">
-            <h3>Activities</h3>
-        </article>
-        <article class="resource-card loading">
-            <h3>Songs</h3>
-        </article>
-    </section>
+        <section class="resources-grid" id="resourcesGrid">
+            <div class="glass-card resource-card" style="--i:0">
+                <h3><span class="res-icon icon-articles">📖</span> Articles</h3>
+                <div class="empty-text">Loading...</div>
+            </div>
+            <div class="glass-card resource-card" style="--i:1">
+                <h3><span class="res-icon icon-videos">🎬</span> Videos</h3>
+                <div class="empty-text">Loading...</div>
+            </div>
+            <div class="glass-card resource-card" style="--i:2">
+                <h3><span class="res-icon icon-activities">🎯</span> Activities</h3>
+                <div class="empty-text">Loading...</div>
+            </div>
+            <div class="glass-card resource-card" style="--i:3">
+                <h3><span class="res-icon icon-songs">🎵</span> Songs</h3>
+                <div class="empty-text">Loading...</div>
+            </div>
+        </section>
+    </div>
 </div>
+
+<div id="popup" class="popup"></div>
 
 <script src="app.js" defer></script>
 <script>
-const API_URL = "http://127.0.0.1:5000";
+    const EQ_API = "http://127.0.0.1:5000";
+    const categoryConfig = [
+        { key:"articles", title:"Articles", icon:"📖", iconClass:"icon-articles", type:"link" },
+        { key:"videos", title:"Videos", icon:"🎬", iconClass:"icon-videos", type:"link" },
+        { key:"activities", title:"Activities", icon:"🎯", iconClass:"icon-activities", type:"text" },
+        { key:"songs", title:"Songs", icon:"🎵", iconClass:"icon-songs", type:"link" }
+    ];
 
-const categoryConfig = [
-    { key: "articles", title: "Articles", type: "link" },
-    { key: "videos", title: "Videos", type: "link" },
-    { key: "activities", title: "Activities", type: "text" },
-    { key: "songs", title: "Songs", type: "link" }
-];
+    function goBack() { window.location = 'dashboard.html'; }
+    function escapeHtml(v) { const d=document.createElement('div'); d.textContent=v; return d.innerHTML; }
+    function prettifyMood(m) { return m || 'Neutral'; }
+    function safeArray(v) { return Array.isArray(v) ? v : []; }
 
-function goBack() {
-    window.location.href = "dashboard.html";
-}
-
-function toggleDarkMode() {
-    if (typeof setTheme === "function") {
-        setTheme(document.body.classList.contains("dark") ? "light" : "dark");
-    } else {
-        document.body.classList.toggle("dark");
-        localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
-        const darkSwitch = document.getElementById("darkSwitch");
-        if (darkSwitch) {
-            darkSwitch.checked = document.body.classList.contains("dark");
+    function renderResourceCard(config, items) {
+        const arr = safeArray(items);
+        let html = `<h3><span class="res-icon ${config.iconClass}">${config.icon}</span> ${config.title}</h3>`;
+        if (!arr.length) {
+            html += `<div class="empty-text">No ${config.title.toLowerCase()} available for this mood</div>`;
+        } else {
+            html += '<ul class="resource-list">';
+            arr.forEach(item => {
+                if (config.type === 'link' && item.url) {
+                    html += `<li class="resource-item"><a class="resource-link" href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.title || item.name || 'Resource')}</a><div class="resource-kind">${escapeHtml(config.title)}</div></li>`;
+                } else {
+                    html += `<li class="resource-item"><span class="resource-link">${escapeHtml(item.title || item.name || item.text || item)}</span><div class="resource-kind">${escapeHtml(config.title)}</div></li>`;
+                }
+            });
+            html += '</ul>';
         }
-    }
-}
-
-function escapeHtml(value) {
-    return String(value).replace(/[&<>"']/g, char => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-    }[char]));
-}
-
-function prettifyMood(mood) {
-    return mood || "Neutral";
-}
-
-function safeArray(value) {
-    return Array.isArray(value) ? value.filter(Boolean) : [];
-}
-
-function renderResourceCard(config, items) {
-    const listItems = safeArray(items);
-    const content = listItems.length
-        ? `<ul class="resource-list">${listItems.map((item, index) => {
-            if (config.type === "link") {
-                const url = escapeHtml(item);
-                return `<li class="resource-item"><span class="resource-kind">${config.title.slice(0, -1)} ${index + 1}</span><a class="resource-link" href="${url}" target="_blank" rel="noopener noreferrer">${url}</a></li>`;
-            }
-            return `<li class="resource-item">${escapeHtml(item)}</li>`;
-        }).join("")}</ul>`
-        : `<p class="empty-text">No ${config.title.toLowerCase()} are available for this mood yet.</p>`;
-
-    return `
-        <article class="resource-card">
-            <h3>${config.title}</h3>
-            ${content}
-        </article>
-    `;
-}
-
-function renderResources(resources) {
-    const grid = document.getElementById("resourcesGrid");
-    grid.innerHTML = categoryConfig
-        .map(config => renderResourceCard(config, resources ? resources[config.key] : []))
-        .join("");
-}
-
-function setState(title, text) {
-    document.getElementById("stateTitle").textContent = title;
-    document.getElementById("stateText").textContent = text;
-}
-
-function applyMoodSummary(data) {
-    const moodPanel = document.getElementById("moodPanel");
-    moodPanel.classList.remove("loading");
-
-    const displayMood = prettifyMood(data.displayMood || data.latestMood);
-    document.getElementById("moodBadge").textContent = data.hasMood
-        ? `Latest mood: ${displayMood}`
-        : "No mood logged yet";
-    document.getElementById("moodDate").textContent = data.date
-        ? `Logged on: ${data.date}`
-        : "Log a mood entry to personalise this page";
-    document.getElementById("moodLevel").textContent = Number.isFinite(Number(data.level))
-        ? `Intensity level: ${Number(data.level)}/10`
-        : "Using a balanced EQ starter set";
-
-    if (!data.hasMood) {
-        setState(
-            "Start with your first check-in",
-            "No mood entry was found yet, so Cerevia is showing the neutral EQ starter set. Add a mood from the Mood page to get a more tailored plan."
-        );
-        return;
+        return html;
     }
 
-    setState(
-        `Support built for ${displayMood}`,
-        `These resources were selected from your EQ library to help you respond to your latest emotional state with more awareness and steadiness.`
-    );
-}
-
-async function loadEQ() {
-    const refreshBtn = document.getElementById("refreshBtn");
-    refreshBtn.disabled = true;
-    refreshBtn.textContent = "Refreshing...";
-
-    try {
-        const response = await fetch(`${API_URL}/eq/resources`);
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-        }
-
-        const data = await response.json();
-        applyMoodSummary(data);
-        renderResources(data.resources || {});
-
-        if (data.error) {
-            setState("Resource library issue", data.error);
-        }
-    } catch (error) {
-        document.getElementById("moodPanel").classList.remove("loading");
-        document.getElementById("moodBadge").textContent = "Unable to load EQ insights";
-        document.getElementById("moodDate").textContent = "Backend connection failed";
-        document.getElementById("moodLevel").textContent = "Try again after starting the server";
-        setState(
-            "We could not reach the EQ service",
-            "The page could not fetch your latest mood or the EQ resource library. Make sure the backend is running, then refresh this page."
-        );
-        renderResources({});
-    } finally {
-        refreshBtn.disabled = false;
-        refreshBtn.textContent = "Refresh insights";
+    function renderResources(resources) {
+        const grid = document.getElementById('resourcesGrid');
+        grid.innerHTML = '';
+        categoryConfig.forEach((cfg, i) => {
+            const card = document.createElement('div');
+            card.className = 'glass-card resource-card';
+            card.style.setProperty('--i', i);
+            card.innerHTML = renderResourceCard(cfg, resources[cfg.key]);
+            grid.appendChild(card);
+        });
     }
-}
 
-document.addEventListener("DOMContentLoaded", () => {
-    if (typeof restoreTheme === "function") {
+    function setState(title, text) {
+        const t = document.getElementById('stateTitle');
+        const p = document.getElementById('stateText');
+        if (t) t.textContent = title;
+        if (p) p.textContent = text;
+    }
+
+    function applyMoodSummary(data) {
+        const panel = document.getElementById('moodPanel');
+        panel.classList.remove('loading');
+        const badge = document.getElementById('moodBadge');
+        const dateEl = document.getElementById('moodDate');
+        const levelEl = document.getElementById('moodLevel');
+        const moodEmojis = {Happy:'😊',Calm:'😌',Neutral:'😐',Sad:'😔',Anxious:'😰',Angry:'😡'};
+
+        if (data.hasMood) {
+            const m = prettifyMood(data.displayMood || data.latestMood);
+            badge.textContent = (moodEmojis[m] || '') + ' ' + m;
+            dateEl.textContent = data.date ? '📅 ' + data.date : '';
+            levelEl.textContent = data.level ? '⚡ Intensity: ' + data.level + '/10' : '';
+            setState('Your EQ resources for ' + m, 'Here are tailored resources to help you process and grow from your current emotional state.');
+        } else {
+            badge.textContent = '🌱 No mood logged';
+            dateEl.textContent = 'Log a mood first';
+            levelEl.textContent = '';
+            setState('Log a mood to unlock EQ resources', 'Head to the Mood page, check in, then come back here for personalized support.');
+        }
+    }
+
+    function loadEQ() {
+        const btn = document.getElementById('refreshBtn');
+        if (btn) { btn.disabled = true; btn.textContent = '🔄 Refreshing...'; }
+        fetch(`${EQ_API}/eq/resources`)
+            .then(r => r.json())
+            .then(data => {
+                applyMoodSummary(data);
+                if (data.resources) renderResources(data.resources);
+                else renderResources({});
+            })
+            .catch(() => {
+                setState('Unable to connect', 'Make sure the backend is running on port 5000.');
+                const panel = document.getElementById('moodPanel');
+                panel.classList.remove('loading');
+                document.getElementById('moodBadge').textContent = '⚠️ Offline';
+            })
+            .finally(() => {
+                if (btn) { btn.disabled = false; btn.textContent = '🔄 Refresh insights'; }
+            });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
         restoreTheme();
-    }
-    if (typeof requireAuth === "function") {
         requireAuth();
-    }
+        const btn = document.getElementById('refreshBtn');
+        if (btn) btn.addEventListener('click', loadEQ);
+        loadEQ();
 
-    const darkSwitch = document.getElementById("darkSwitch");
-    if (darkSwitch) {
-        darkSwitch.checked = document.body.classList.contains("dark");
-    }
-
-    document.getElementById("refreshBtn").addEventListener("click", loadEQ);
-    loadEQ();
-});
-
-window.addEventListener("storage", event => {
-    if (event.key === "theme" && typeof restoreTheme === "function") {
-        restoreTheme();
-    }
-});
+        // 3D tilt
+        const s = document.querySelector('.scene-3d');
+        if (s && window.innerWidth > 768) {
+            document.addEventListener('mousemove', e => {
+                const x = (e.clientX / window.innerWidth - 0.5) * 3;
+                const y = (e.clientY / window.innerHeight - 0.5) * 2;
+                s.style.transform = `rotateX(${1 - y}deg) rotateY(${x}deg)`;
+            });
+        }
+    });
 </script>
 </body>
 </html>

@@ -1,139 +1,249 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>CEREVIA — Dashboard</title>
+    <title>CEREVIA — Wellness Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
     <style>
-        /* ── Dashboard-specific overrides ── */
+        /* ═══════════════════════════════════════════════════
+           CEREVIA 3D DASHBOARD — Glassmorphic Floating UI
+           ═══════════════════════════════════════════════════ */
+
         :root {
-            --mint:     #a8f0d8;
-            --sage:     #6ec6a2;
+            --mint: #a8f0d8;
+            --sage: #6ec6a2;
             --lavender: #cbb8f5;
-            --violet:   #9b7fe8;
-            --cream:    #fef9f4;
-            --text:     #2c2438;
-            --sub:      #7b6f8a;
-            --glass:    rgba(255,255,255,0.55);
-            --shadow:   0 20px 60px rgba(100,80,140,0.14);
-            --radius-lg: 26px;
-            --radius-md: 16px;
-            --trans:    0.35s cubic-bezier(.4,0,.2,1);
+            --violet: #9b7fe8;
+            --blush: #f6c4d4;
+            --cream: #e8edf5;
+            --text: #2c2438;
+            --sub: #7b6f8a;
+            --glass: rgba(255,255,255,0.42);
+            --glass-border: rgba(255,255,255,0.65);
+            --shadow: 0 8px 32px rgba(100,80,140,0.12);
+            --shadow-hover: 0 20px 60px rgba(100,80,140,0.22);
+            --radius: 24px;
+            --radius-sm: 16px;
+            --trans: 0.4s cubic-bezier(.25,.46,.45,.94);
             --font-display: 'DM Serif Display', serif;
-            --font-body:    'DM Sans', sans-serif;
+            --font-body: 'DM Sans', sans-serif;
         }
 
         body.dark {
-            --cream:  #16121f;
-            --text:   #f0eaf8;
-            --sub:    #b0a0c8;
-            --glass:  rgba(30,24,46,0.6);
-            --shadow: 0 20px 60px rgba(0,0,0,0.45);
+            --cream: #0f0b1a;
+            --text: #f0eaf8;
+            --sub: #b0a0c8;
+            --glass: rgba(30,24,46,0.55);
+            --glass-border: rgba(255,255,255,0.08);
+            --shadow: 0 8px 32px rgba(0,0,0,0.4);
+            --shadow-hover: 0 20px 60px rgba(0,0,0,0.55);
         }
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: var(--font-body);
-            background: var(--cream);
             color: var(--text);
             min-height: 100vh;
-            transition: background var(--trans), color var(--trans);
-            animation: pageFadeIn 0.5s ease both;
+            overflow-x: hidden;
+            transition: background 0.5s, color 0.5s;
         }
 
-        @keyframes pageFadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to   { opacity: 1; transform: translateY(0); }
+        /* ── Gradient Mesh Background ── */
+        .scene-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(168,240,216,0.4) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(203,184,245,0.35) 0%, transparent 50%),
+                radial-gradient(ellipse at 60% 80%, rgba(246,196,212,0.3) 0%, transparent 50%),
+                linear-gradient(135deg, #d4e7ed 0%, #e0d6f0 40%, #dce8e0 70%, #e8ddf2 100%);
         }
 
-        /* ── Background blobs ── */
-        .bg-wrap {
-            position: fixed; inset: 0; z-index: 0;
-            overflow: hidden; pointer-events: none;
-        }
-        .blob {
-            position: absolute; border-radius: 50%;
-            filter: blur(80px); opacity: 0.4;
-            animation: blobDrift 16s ease-in-out infinite;
-        }
-        .blob-1 { width: 600px; height: 600px; background: #c3f4e4; top: -180px; left: -150px; animation-delay: 0s; }
-        .blob-2 { width: 480px; height: 480px; background: #e4d4fc; bottom: -120px; right: -100px; animation-delay: -6s; }
-        .blob-3 { width: 380px; height: 380px; background: #fcd4e8; top: 40%; left: 52%; animation-delay: -11s; }
-
-        body.dark .blob-1 { background: #112e42; opacity: 0.55; }
-        body.dark .blob-2 { background: #28144c; opacity: 0.55; }
-        body.dark .blob-3 { background: #3a1228; opacity: 0.45; }
-
-        @keyframes blobDrift {
-            0%,100% { transform: translate(0,0) scale(1); }
-            33%      { transform: translate(30px,-24px) scale(1.04); }
-            66%      { transform: translate(-20px,22px) scale(0.97); }
+        body.dark .scene-bg {
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(17,46,66,0.6) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(40,20,76,0.5) 0%, transparent 50%),
+                radial-gradient(ellipse at 60% 80%, rgba(58,18,40,0.4) 0%, transparent 50%),
+                linear-gradient(135deg, #0f0b1a 0%, #16121f 50%, #120e1a 100%);
         }
 
-        /* ── Top Nav ── */
+        /* ── Floating Soap Bubbles ── */
+        .bubbles {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, 
+                rgba(255,255,255,0.5), 
+                rgba(200,180,240,0.15) 40%, 
+                rgba(168,240,216,0.1) 60%,
+                transparent 70%);
+            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: inset 0 0 20px rgba(255,255,255,0.15),
+                        0 0 40px rgba(180,160,220,0.08);
+            animation: floatBubble var(--dur) ease-in-out infinite;
+        }
+
+        .bubble::after {
+            content: '';
+            position: absolute;
+            width: 30%;
+            height: 30%;
+            top: 15%;
+            left: 20%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.6), transparent);
+        }
+
+        .bubble-1 { width: 80px; height: 80px; top: 8%; left: 5%; --dur: 8s; animation-delay: 0s; }
+        .bubble-2 { width: 50px; height: 50px; top: 15%; right: 12%; --dur: 10s; animation-delay: -2s; }
+        .bubble-3 { width: 120px; height: 120px; bottom: 20%; left: 8%; --dur: 12s; animation-delay: -4s; }
+        .bubble-4 { width: 40px; height: 40px; top: 60%; right: 5%; --dur: 9s; animation-delay: -1s; }
+        .bubble-5 { width: 65px; height: 65px; bottom: 10%; right: 20%; --dur: 11s; animation-delay: -3s; }
+        .bubble-6 { width: 35px; height: 35px; top: 35%; left: 15%; --dur: 7s; animation-delay: -5s; }
+        .bubble-7 { width: 90px; height: 90px; bottom: 5%; left: 45%; --dur: 13s; animation-delay: -6s; }
+        .bubble-8 { width: 45px; height: 45px; top: 5%; left: 55%; --dur: 9s; animation-delay: -2s; }
+
+        @keyframes floatBubble {
+            0%, 100% { transform: translateY(0) translateX(0) rotate(0deg); }
+            25% { transform: translateY(-20px) translateX(10px) rotate(5deg); }
+            50% { transform: translateY(-8px) translateX(-15px) rotate(-3deg); }
+            75% { transform: translateY(-25px) translateX(8px) rotate(4deg); }
+        }
+
+        /* ── Sparkle Stars ── */
+        .sparkle {
+            position: fixed;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .sparkle-1 { bottom: 8%; right: 10%; font-size: 28px; animation: sparkleRotate 4s linear infinite; }
+        .sparkle-2 { top: 50%; left: 3%; font-size: 18px; animation: sparkleRotate 6s linear infinite reverse; }
+
+        @keyframes sparkleRotate {
+            0% { transform: rotate(0deg) scale(1); opacity: 0.6; }
+            50% { transform: rotate(180deg) scale(1.2); opacity: 1; }
+            100% { transform: rotate(360deg) scale(1); opacity: 0.6; }
+        }
+
+        /* ── Top Navigation ── */
         .top-nav {
-            position: sticky; top: 0; z-index: 50;
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 16px 32px;
-            background: rgba(255,255,255,0.5);
-            backdrop-filter: blur(22px);
-            -webkit-backdrop-filter: blur(22px);
-            border-bottom: 1px solid rgba(180,160,220,0.18);
-            box-shadow: 0 4px 24px rgba(100,80,140,0.07);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 36px;
+            background: rgba(255,255,255,0.35);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid rgba(255,255,255,0.4);
+            box-shadow: 0 4px 30px rgba(100,80,140,0.06);
         }
 
         body.dark .top-nav {
-            background: rgba(22,18,31,0.72);
-            border-bottom-color: rgba(255,255,255,0.07);
+            background: rgba(15,11,26,0.65);
+            border-bottom-color: rgba(255,255,255,0.06);
         }
 
-        .nav-logo {
+        .nav-brand {
             font-family: var(--font-display);
-            font-size: 21px;
+            font-size: 22px;
             color: var(--text);
-            letter-spacing: -0.3px;
-            display: flex; align-items: center; gap: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
         }
 
-        .nav-logo-icon .logo{
-            width: 34px; height: 34px;
+        .nav-brand img {
+            width: 36px;
+            height: 36px;
             border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 17px;
         }
 
-        .nav-links {
-            display: flex; align-items: center; gap: 4px;
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .nav-links a {
-            padding: 7px 14px;
+        .nav-link {
+            padding: 8px 16px;
             border-radius: 50px;
             text-decoration: none;
             font-size: 14px;
             font-weight: 500;
             color: var(--sub);
             transition: var(--trans);
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-family: var(--font-body);
         }
 
-        .nav-links a:hover, .nav-links a.active {
+        .nav-link:hover, .nav-link.active {
             color: var(--text);
             background: rgba(180,160,220,0.15);
         }
 
-        body.dark .nav-links a { color: rgba(240,234,248,0.6); }
-        body.dark .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.08); }
+        body.dark .nav-link { color: rgba(240,234,248,0.55); }
+        body.dark .nav-link:hover, body.dark .nav-link.active { color: var(--text); background: rgba(255,255,255,0.08); }
+
+        .nav-icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid rgba(180,160,220,0.2);
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            transition: var(--trans);
+            position: relative;
+            color: var(--text);
+        }
+
+        .nav-icon-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 4px 16px rgba(100,80,140,0.15);
+        }
+
+        .notif-dot {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 8px;
+            height: 8px;
+            background: #e05050;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        body.dark .notif-dot { border-color: #16121f; }
 
         .nav-logout {
-            margin-left: 8px;
             padding: 8px 18px;
             border-radius: 50px;
             border: 1.5px solid rgba(220,80,80,0.22);
             background: rgba(220,80,80,0.09);
             color: #d04040;
-            font-size: 13.5px;
+            font-size: 13px;
             font-weight: 600;
             font-family: var(--font-body);
             cursor: pointer;
@@ -142,293 +252,690 @@
 
         .nav-logout:hover { background: rgba(220,80,80,0.18); transform: scale(1.03); }
 
-        /* ── Dark toggle inside nav ── */
-        .dark-toggle { display: flex; align-items: center; margin-left: 16px; }
-        .dark-toggle input { display: none; }
-        .dark-toggle label {
-            width: 48px; height: 26px;
-            background: rgba(180,160,220,0.25);
-            border: 1.5px solid rgba(180,160,220,0.4);
-            display: block; border-radius: 50px;
-            position: relative; cursor: pointer; transition: var(--trans);
-        }
-        .dark-toggle label::before {
-            content: "☀️"; font-size: 11px;
-            width: 20px; height: 20px;
-            background: white; position: absolute;
-            top: 2px; left: 2px; border-radius: 50%;
-            transition: var(--trans);
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.12);
-        }
-        .dark-toggle input:checked + label { background: rgba(106,17,203,0.35); border-color: rgba(106,17,203,0.5); }
-        .dark-toggle input:checked + label::before { content: "🌙"; transform: translateX(22px); }
-
-        /* ── Page header ── */
-        .page-header {
-            position: relative; z-index: 10;
-            padding: 36px 36px 8px;
+        /* ── 3D Scene Container ── */
+        .scene {
+            position: relative;
+            z-index: 10;
+            perspective: 1400px;
+            padding: 24px 36px 60px;
         }
 
-        .page-greeting {
-            font-size: 13.5px;
-            font-weight: 500;
-            color: var(--sub);
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            margin-bottom: 6px;
+        .dashboard-3d {
+            transform-style: preserve-3d;
+            transform: rotateX(2deg) rotateY(0deg);
+            transition: transform 0.8s ease;
         }
 
+        /* ── Page Title ── */
         .page-title {
             font-family: var(--font-display);
-            font-size: 36px;
+            font-size: 38px;
             color: var(--text);
-            letter-spacing: -0.8px;
-            line-height: 1.1;
+            text-align: center;
+            margin-bottom: 32px;
+            letter-spacing: -0.5px;
+            transform: translateZ(40px);
         }
 
         .page-title span {
             background: linear-gradient(135deg, var(--sage), var(--violet));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
-        /* ── Dashboard Grid ── */
-        .dashboard-grid {
-            position: relative; z-index: 10;
+        /* ── Bento Grid ── */
+        .bento-grid {
             display: grid;
             grid-template-columns: repeat(12, 1fr);
             gap: 20px;
-            padding: 28px 36px 40px;
+            transform-style: preserve-3d;
         }
 
-        /* ── Base Card ── */
-        .dash-card {
+        /* ── 3D Glass Card Base ── */
+        .glass-card {
             background: var(--glass);
-            border-radius: var(--radius-lg);
+            border-radius: var(--radius);
             padding: 24px;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.65);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border);
             box-shadow: var(--shadow);
             transition: transform var(--trans), box-shadow var(--trans);
-            animation: cardFadeIn 0.6s ease both;
+            transform: translateZ(0);
+            transform-style: preserve-3d;
+            position: relative;
+            overflow: hidden;
         }
 
-        body.dark .dash-card {
-            border-color: rgba(255,255,255,0.09);
-            background: rgba(30,24,46,0.62);
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
         }
 
-        .dash-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 28px 64px rgba(100,80,140,0.18);
+        body.dark .glass-card {
+            border-color: rgba(255,255,255,0.07);
+            background: rgba(30,24,46,0.5);
         }
 
-        @keyframes cardFadeIn {
-            from { opacity: 0; transform: translateY(16px); }
-            to   { opacity: 1; transform: translateY(0); }
+        body.dark .glass-card::before {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
         }
 
+        .glass-card:hover {
+            transform: translateZ(20px) translateY(-6px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* Staggered entrance animations */
+        .glass-card { animation: cardFloat 0.8s ease both; }
+        .glass-card:nth-child(1) { animation-delay: 0.05s; }
+        .glass-card:nth-child(2) { animation-delay: 0.1s; }
+        .glass-card:nth-child(3) { animation-delay: 0.15s; }
+        .glass-card:nth-child(4) { animation-delay: 0.2s; }
+        .glass-card:nth-child(5) { animation-delay: 0.25s; }
+        .glass-card:nth-child(6) { animation-delay: 0.3s; }
+        .glass-card:nth-child(7) { animation-delay: 0.35s; }
+        .glass-card:nth-child(8) { animation-delay: 0.4s; }
+        .glass-card:nth-child(9) { animation-delay: 0.45s; }
+
+        @keyframes cardFloat {
+            from { opacity: 0; transform: translateZ(-40px) translateY(30px); }
+            to { opacity: 1; transform: translateZ(0) translateY(0); }
+        }
+
+        /* ── Grid Spans ── */
+        .col-3 { grid-column: span 3; }
+        .col-4 { grid-column: span 4; }
+        .col-5 { grid-column: span 5; }
+        .col-6 { grid-column: span 6; }
+        .col-7 { grid-column: span 7; }
+        .col-8 { grid-column: span 8; }
+        .col-9 { grid-column: span 9; }
+        .col-12 { grid-column: span 12; }
+
+        /* ── Card Labels ── */
         .card-label {
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 0.8px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
             text-transform: uppercase;
             color: var(--sub);
-            margin-bottom: 10px;
-            display: flex; align-items: center; gap: 6px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .card-label-dot {
-            width: 7px; height: 7px; border-radius: 50%;
+        .label-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
             background: linear-gradient(135deg, var(--sage), var(--violet));
         }
 
         .card-title {
             font-family: var(--font-display);
-            font-size: 18px;
+            font-size: 20px;
             color: var(--text);
-            margin-bottom: 14px;
+            margin-bottom: 8px;
         }
 
-        /* ── Grid Sizing ── */
-        .col-3  { grid-column: span 3; }
-        .col-4  { grid-column: span 4; }
-        .col-5  { grid-column: span 5; }
-        .col-6  { grid-column: span 6; }
-        .col-7  { grid-column: span 7; }
-        .col-8  { grid-column: span 8; }
-        .col-12 { grid-column: span 12; }
-
-        /* ── Progress Ring ── */
-        .ring-wrap {
-            display: flex; align-items: center; gap: 24px;
+        /* ══════════════════════════════════════
+           CARD 1: MOOD SCORE (Circular Ring)
+           ══════════════════════════════════════ */
+        .mood-score-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
         }
 
-        .progress-ring {
+        .ring-container {
             position: relative;
-            width: 110px; height: 110px;
-            flex-shrink: 0;
+            width: 130px;
+            height: 130px;
+            margin: 8px 0;
         }
 
-        .progress-ring svg {
-            width: 110px; height: 110px;
+        .ring-container svg {
+            width: 130px;
+            height: 130px;
             transform: rotate(-90deg);
         }
 
-        .progress-ring circle {
-            fill: none; stroke-width: 11; stroke-linecap: round;
+        .ring-container circle {
+            fill: none;
+            stroke-width: 10;
+            stroke-linecap: round;
         }
 
-        .progress-ring circle.bg { stroke: rgba(180,160,220,0.18); }
-        .progress-ring circle.progress {
+        .ring-container circle.ring-bg {
+            stroke: rgba(180,160,220,0.15);
+        }
+
+        .ring-container circle.ring-progress {
             stroke: url(#ringGrad);
-            stroke-dasharray: 282;
-            stroke-dashoffset: 282;
-            transition: stroke-dashoffset 1.6s cubic-bezier(.4,0,.2,1);
+            stroke-dasharray: 314;
+            stroke-dashoffset: 314;
+            transition: stroke-dashoffset 1.8s cubic-bezier(.4,0,.2,1);
         }
 
-        .ring-text {
+        .ring-percent {
             position: absolute;
             inset: 0;
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-family: var(--font-display);
-            font-size: 22px;
+            font-size: 28px;
             color: var(--text);
         }
 
-        .ring-info { flex: 1; }
-        .ring-big {
-            font-family: var(--font-display);
-            font-size: 38px;
-            background: linear-gradient(135deg, var(--sage), var(--violet));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            line-height: 1;
-        }
-
-        .ring-label {
-            font-size: 13px;
+        .ring-footer {
+            font-size: 12px;
             color: var(--sub);
-            margin-top: 6px;
-            font-weight: 500;
+            margin-top: 4px;
         }
 
-        /* ── Stat Cards ── */
-        .stat-value {
-            font-family: var(--font-display);
-            font-size: 44px;
-            line-height: 1;
-            margin: 8px 0 4px;
-            background: linear-gradient(135deg, var(--sage), var(--violet));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        /* ══════════════════════════════════════
+           CARD 2: 3D BRAIN VISUALIZATION
+           ══════════════════════════════════════ */
+        .brain-card {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 180px;
+            position: relative;
         }
 
-        .stat-sub {
-            font-size: 12.5px;
-            color: var(--sub);
-            font-weight: 500;
+        .brain-3d {
+            position: relative;
+            width: 140px;
+            height: 110px;
+            animation: brainFloat 4s ease-in-out infinite;
         }
 
-        /* ── Weekly Chart ── */
-        .chart-container {
-            margin-top: 16px;
+        .brain-lobe {
+            position: absolute;
+            border-radius: 50% 50% 50% 50%;
+            top: 10px;
         }
 
-        .weekly-chart {
+        .brain-left {
+            width: 72px;
+            height: 90px;
+            background: linear-gradient(135deg, #5ecfb0, #3ab89a);
+            left: 5px;
+            border-radius: 45% 5% 5% 45%;
+            box-shadow: -4px 4px 20px rgba(94,207,176,0.4);
+        }
+
+        .brain-right {
+            width: 72px;
+            height: 90px;
+            background: linear-gradient(135deg, #b48ae8, #8b6ad4);
+            right: 5px;
+            border-radius: 5% 45% 45% 5%;
+            box-shadow: 4px 4px 20px rgba(180,138,232,0.4);
+        }
+
+        .brain-wave {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            z-index: 2;
+        }
+
+        .brain-wave svg {
+            width: 140px;
+            height: 40px;
+        }
+
+        .brain-wave svg path {
+            fill: none;
+            stroke: var(--text);
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-dasharray: 300;
+            stroke-dashoffset: 300;
+            animation: drawWave 2s ease-in-out infinite;
+        }
+
+        @keyframes drawWave {
+            0% { stroke-dashoffset: 300; }
+            50% { stroke-dashoffset: 0; }
+            100% { stroke-dashoffset: -300; }
+        }
+
+        @keyframes brainFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        /* ══════════════════════════════════════
+           CARD 3: MOST FREQUENT MOOD (Bar Chart)
+           ══════════════════════════════════════ */
+        .freq-chart {
             display: flex;
             align-items: flex-end;
-            height: 160px;
-            gap: 10px;
-            padding: 0 4px;
-            background: rgba(255,255,255,0.3);
-            border-radius: var(--radius-md);
-            padding: 16px 16px 0;
-            border: 1px solid rgba(180,160,220,0.12);
+            gap: 8px;
+            height: 110px;
+            margin-top: 12px;
+            padding: 8px 4px 0;
         }
 
-        body.dark .weekly-chart {
-            background: rgba(255,255,255,0.04);
+        .freq-bar {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            height: 100%;
         }
 
-        .bar {
-            flex: 1; height: 100%;
-            display: flex; flex-direction: column;
-            justify-content: flex-end; align-items: center;
+        .freq-bar-fill {
+            width: 100%;
+            border-radius: 6px 6px 0 0;
+            transition: height 0.8s cubic-bezier(.4,0,.2,1);
+            min-height: 8px;
         }
 
-        .bar-inner {
-            width: 100%; min-height: 6px;
-            border-radius: 8px 8px 0 0;
-            background: linear-gradient(180deg, var(--sage) 0%, var(--violet) 100%);
-            transition: height 0.75s cubic-bezier(.4,0,.2,1);
-            box-shadow: 0 -4px 12px rgba(110,198,162,0.28);
-        }
+        .freq-bar:nth-child(1) .freq-bar-fill { background: linear-gradient(180deg, #60d4f0, #4db8d4); }
+        .freq-bar:nth-child(2) .freq-bar-fill { background: linear-gradient(180deg, #f0c060, #d4a844); }
+        .freq-bar:nth-child(3) .freq-bar-fill { background: linear-gradient(180deg, #f08060, #d46444); }
+        .freq-bar:nth-child(4) .freq-bar-fill { background: linear-gradient(180deg, #60f0a0, #44d484); }
+        .freq-bar:nth-child(5) .freq-bar-fill { background: linear-gradient(180deg, #a060f0, #8444d4); }
 
-        .bar-value {
-            margin-top: 7px; font-size: 11px;
-            font-weight: 600; color: var(--text);
-        }
-
-        .bar-label {
-            margin-top: 3px; font-size: 10.5px;
-            color: var(--sub); font-weight: 500;
-            margin-bottom: 6px;
-        }
-
-        /* ── Suggestion Card ── */
-        .suggestion-text {
-            font-size: 15px;
-            width: 170px;
-            line-height: 1.65;
+        .freq-bar-label {
+            font-size: 10px;
             color: var(--sub);
             margin-top: 6px;
+            font-weight: 500;
         }
 
+        .trend-arrow {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .trend-up { color: #f06040; }
+        .trend-down { color: #40a0f0; }
+        .trend-stable { color: var(--sub); }
+
+        /* ══════════════════════════════════════
+           CARD 4: BREATHING PRACTICE (Hero)
+           ══════════════════════════════════════ */
+        .breathing-hero {
+            background: linear-gradient(135deg, rgba(100,180,220,0.3), rgba(160,120,220,0.25));
+            position: relative;
+            overflow: hidden;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .breathing-hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60%;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 100'%3E%3Cpath d='M0,50 Q50,20 100,50 Q150,80 200,50 Q250,20 300,50 Q350,80 400,50' fill='none' stroke='rgba(255,255,255,0.15)' stroke-width='1.5'/%3E%3Cpath d='M0,60 Q50,30 100,60 Q150,90 200,60 Q250,30 300,60 Q350,90 400,60' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='1'/%3E%3C/svg%3E") repeat-x;
+            background-size: 400px 100px;
+            animation: waveScroll 8s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes waveScroll {
+            0% { background-position-x: 0; }
+            100% { background-position-x: 400px; }
+        }
+
+        .breathing-hero .meditation-icon {
+            font-size: 56px;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 4px 12px rgba(100,80,140,0.2));
+        }
+
+        .breathing-hero .card-title {
+            font-size: 22px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .breathing-hero .card-subtitle {
+            font-size: 13px;
+            color: var(--sub);
+            margin-top: 4px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .breathing-hero .start-btn {
+            margin-top: 16px;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.7), rgba(255,255,255,0.4));
+            backdrop-filter: blur(10px);
+            font-family: var(--font-body);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            transition: var(--trans);
+            position: relative;
+            z-index: 2;
+        }
+
+        .breathing-hero .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(100,80,140,0.2);
+        }
+
+        /* ══════════════════════════════════════
+           CARD 5: TODAY'S SUGGESTION
+           ══════════════════════════════════════ */
         .suggestion-chip {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            padding: 5px 13px;
-            background: linear-gradient(135deg, rgba(168,240,216,0.35), rgba(203,184,245,0.35));
+            gap: 6px;
+            padding: 5px 14px;
+            background: linear-gradient(135deg, rgba(168,240,216,0.3), rgba(203,184,245,0.3));
             border: 1px solid rgba(180,160,220,0.2);
             border-radius: 50px;
             font-size: 12px;
             font-weight: 600;
             color: var(--text);
-            margin-bottom: 14px;
+            margin-bottom: 12px;
         }
 
-        /* ── Emergency Card ── */
+        .suggestion-text {
+            font-size: 15px;
+            line-height: 1.65;
+            color: var(--sub);
+        }
+
+        /* ══════════════════════════════════════
+           CARD 6: START BREATHING (Wide Gradient)
+           ══════════════════════════════════════ */
+        .breathing-wide {
+            background: linear-gradient(135deg, #3ecfb0, #7b6ae8, #b050d0) !important;
+            border: none !important;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            min-height: 160px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .breathing-wide::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 120'%3E%3Cpath d='M0,60 Q62.5,20 125,60 Q187.5,100 250,60 Q312.5,20 375,60 Q437.5,100 500,60' fill='none' stroke='rgba(255,255,255,0.12)' stroke-width='1.5'/%3E%3Cpath d='M0,70 Q62.5,30 125,70 Q187.5,110 250,70 Q312.5,30 375,70 Q437.5,110 500,70' fill='none' stroke='rgba(255,255,255,0.08)' stroke-width='1'/%3E%3Cpath d='M0,80 Q62.5,40 125,80 Q187.5,120 250,80 Q312.5,40 375,80 Q437.5,120 500,80' fill='none' stroke='rgba(255,255,255,0.05)' stroke-width='1'/%3E%3C/svg%3E") repeat-x;
+            background-size: 500px 120px;
+            animation: waveScroll 10s linear infinite;
+        }
+
+        .breathing-wide .traffic-dots {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 14px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .traffic-dots span {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .traffic-dots span:nth-child(1) { background: #f06050; }
+        .traffic-dots span:nth-child(2) { background: #f0c040; }
+        .traffic-dots span:nth-child(3) { background: #40d070; }
+
+        .breathing-wide .card-title {
+            color: white;
+            font-size: 24px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .breathing-wide .card-subtitle {
+            color: rgba(255,255,255,0.7);
+            font-size: 13px;
+            margin-top: 6px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ══════════════════════════════════════
+           CARD 7: BOOST YOUR EQ
+           ══════════════════════════════════════ */
+        .eq-card {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .eq-icon-wrap {
+            width: 44px;
+            height: 44px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-bottom: 14px;
+            box-shadow: 0 4px 12px rgba(100,80,140,0.08);
+        }
+
+        .eq-card .card-desc {
+            font-size: 13px;
+            color: var(--sub);
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .eq-btn {
+            padding: 11px 24px;
+            border: none;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--sage), var(--violet));
+            color: white;
+            box-shadow: 0 6px 18px rgba(110,198,162,0.35);
+            transition: var(--trans);
+            font-family: var(--font-body);
+            align-self: flex-start;
+        }
+
+        .eq-btn:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 12px 28px rgba(110,198,162,0.45);
+        }
+
+        /* ══════════════════════════════════════
+           CARD 8: MOOD TREND (Line Chart)
+           ══════════════════════════════════════ */
+        .trend-card { min-height: 150px; }
+
+        .trend-chart-area {
+            position: relative;
+            height: 90px;
+            margin-top: 12px;
+        }
+
+        .trend-chart-area svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .trend-line {
+            fill: none;
+            stroke: var(--sage);
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .trend-fill {
+            fill: url(#trendFill);
+            opacity: 0.3;
+        }
+
+        .trend-dot {
+            fill: var(--sage);
+            stroke: white;
+            stroke-width: 2;
+        }
+
+        /* ══════════════════════════════════════
+           CARD 9: WEEKLY CHART
+           ══════════════════════════════════════ */
+        .weekly-chart {
+            display: flex;
+            align-items: flex-end;
+            height: 140px;
+            gap: 8px;
+            margin-top: 12px;
+            padding: 12px 12px 0;
+            background: rgba(255,255,255,0.25);
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(180,160,220,0.1);
+        }
+
+        body.dark .weekly-chart { background: rgba(255,255,255,0.04); }
+
+        .bar { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; }
+        .bar-inner {
+            width: 100%;
+            min-height: 6px;
+            border-radius: 6px 6px 0 0;
+            background: linear-gradient(180deg, var(--sage) 0%, var(--violet) 100%);
+            transition: height 0.75s cubic-bezier(.4,0,.2,1);
+            box-shadow: 0 -4px 12px rgba(110,198,162,0.2);
+        }
+        .bar-label {
+            margin-top: 6px;
+            font-size: 10px;
+            color: var(--sub);
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        /* ══════════════════════════════════════
+           CARD: ANALYTICS INSIGHTS (Java Service)
+           ══════════════════════════════════════ */
+        .analytics-card { }
+
+        .insight-item {
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            background: rgba(168,240,216,0.1);
+            border-radius: 10px;
+            font-size: 13px;
+            color: var(--sub);
+            line-height: 1.5;
+            border-left: 3px solid var(--sage);
+        }
+
+        .stat-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .mini-stat {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 14px;
+            border: 1px solid rgba(180,160,220,0.1);
+        }
+
+        body.dark .mini-stat { background: rgba(255,255,255,0.04); }
+
+        .mini-stat-value {
+            font-family: var(--font-display);
+            font-size: 26px;
+            background: linear-gradient(135deg, var(--sage), var(--violet));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .mini-stat-label {
+            font-size: 11px;
+            color: var(--sub);
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        /* ══════════════════════════════════════
+           STAT VALUE (reusable)
+           ══════════════════════════════════════ */
+        .stat-value {
+            font-family: var(--font-display);
+            font-size: 42px;
+            line-height: 1;
+            margin: 8px 0 4px;
+            background: linear-gradient(135deg, var(--sage), var(--violet));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-sub {
+            font-size: 12px;
+            color: var(--sub);
+            font-weight: 500;
+        }
+
+        /* ══════════════════════════════════════
+           EMERGENCY ALERT
+           ══════════════════════════════════════ */
         .emergency-card {
             border: 2px solid rgba(220,50,50,0.35) !important;
-            background: rgba(255,230,230,0.45) !important;
+            background: rgba(255,230,230,0.5) !important;
+            animation: emergencyPulse 2s infinite ease-in-out;
         }
 
-        body.dark .emergency-card {
-            background: rgba(80,20,20,0.45) !important;
+        body.dark .emergency-card { background: rgba(80,20,20,0.45) !important; }
+
+        @keyframes emergencyPulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(220,50,50,0.15); }
+            50% { box-shadow: 0 0 40px rgba(220,50,50,0.3); }
         }
 
+        .emergency-text { font-size: 14px; color: var(--sub); margin-bottom: 14px; line-height: 1.5; }
         .emergency-label { color: #c53030 !important; }
-        .emergency-label .card-label-dot { background: #e05050; }
 
-        .emergency-text {
-            font-size: 14px;
-            color: var(--sub);
-            margin-bottom: 14px;
-            line-height: 1.5;
-        }
-
-        .emergency-btn-card {
+        .emergency-btn {
             width: 100%;
             padding: 13px;
             border: none;
-            border-radius: var(--radius-md);
+            border-radius: var(--radius-sm);
             background: linear-gradient(135deg, #e05050, #c03030);
             color: white;
             font-size: 15px;
@@ -436,61 +943,171 @@
             font-family: var(--font-body);
             cursor: pointer;
             box-shadow: 0 8px 22px rgba(220,50,50,0.35);
-            animation: pulseBorder 2s infinite ease-in-out;
             transition: var(--trans);
         }
 
-        @keyframes pulseBorder {
-            0%,100% { box-shadow: 0 8px 22px rgba(220,50,50,0.35); }
-            50%      { box-shadow: 0 12px 32px rgba(220,50,50,0.55); }
-        }
+        .emergency-btn:hover { transform: translateY(-2px); }
 
-        .emergency-btn-card:hover { transform: translateY(-2px); }
-
-        /* ── Quick Action Buttons ── */
-        .quick-actions {
-            position: relative; z-index: 10;
-            display: flex;
-            gap: 12px;
-            padding: 0 36px 32px;
-            flex-wrap: wrap;
-        }
-
-        .action-btn {
-            display: flex; align-items: center; gap: 8px;
-            padding: 12px 22px;
-            background: var(--glass);
-            border: 1px solid rgba(255,255,255,0.6);
+        /* ══════════════════════════════════════
+           CHATBOT
+           ══════════════════════════════════════ */
+        .chat-toggle {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            background: linear-gradient(135deg, var(--sage), var(--violet));
+            color: white;
+            padding: 14px 24px;
             border-radius: 50px;
-            font-family: var(--font-body);
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text);
             cursor: pointer;
-            transition: var(--trans);
-            backdrop-filter: blur(14px);
-            box-shadow: 0 6px 18px rgba(100,80,140,0.1);
-            text-decoration: none;
-        }
-
-        body.dark .action-btn {
-            border-color: rgba(255,255,255,0.09);
-            background: rgba(30,24,46,0.55);
-        }
-
-        .action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 28px rgba(100,80,140,0.18);
-            border-color: rgba(180,160,220,0.4);
-        }
-
-        .action-btn .ab-icon {
-            width: 28px; height: 28px;
-            background: linear-gradient(135deg, rgba(168,240,216,0.5), rgba(203,184,245,0.5));
-            border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
+            font-weight: 700;
             font-size: 14px;
+            font-family: var(--font-body);
+            box-shadow: 0 12px 32px rgba(110,198,162,0.45);
+            transition: var(--trans);
+            z-index: 1000;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
+
+        .chat-toggle:hover { transform: scale(1.07); }
+
+        .chat-pulse {
+            width: 9px; height: 9px; border-radius: 50%;
+            background: white; opacity: 0.85;
+            animation: pulseDot 1.6s infinite ease-in-out;
+        }
+
+        @keyframes pulseDot {
+            0%,100% { transform: scale(1); opacity: 0.85; }
+            50% { transform: scale(1.4); opacity: 0.4; }
+        }
+
+        .chatbot {
+            position: fixed;
+            bottom: 92px;
+            right: 28px;
+            width: 400px;
+            height: 540px;
+            background: rgba(254,249,244,0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            border: 1px solid rgba(180,160,220,0.2);
+            box-shadow: 0 32px 72px rgba(100,80,140,0.28);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 1000;
+            animation: cardFloat 0.3s ease;
+        }
+
+        body.dark .chatbot {
+            background: rgba(22,18,31,0.97);
+            border-color: rgba(255,255,255,0.09);
+        }
+
+        .hidden { display: none !important; }
+
+        .chat-header {
+            background: linear-gradient(135deg, #4e0dc5, #1a68f0);
+            color: white;
+            padding: 18px 20px;
+            font-family: var(--font-display);
+            font-size: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #chat-close { cursor: pointer; opacity: 0.8; transition: var(--trans); font-size: 18px; }
+        #chat-close:hover { opacity: 1; transform: scale(1.15); }
+
+        .chat-messages {
+            flex: 1; padding: 18px; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 12px;
+        }
+
+        .user-msg {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #4e0dc5, #1a68f0);
+            color: white; padding: 11px 16px;
+            border-radius: 18px 18px 4px 18px;
+            max-width: 80%; font-size: 14px; font-weight: 500; line-height: 1.5;
+        }
+
+        .bot-msg {
+            align-self: flex-start;
+            background: rgba(248,246,252,0.95);
+            color: var(--text); padding: 11px 16px;
+            border-radius: 18px 18px 18px 4px;
+            max-width: 80%; font-size: 14px; font-weight: 500; line-height: 1.5;
+            border: 1px solid rgba(180,160,220,0.15);
+        }
+
+        body.dark .bot-msg { background: rgba(255,255,255,0.08); }
+
+        .typing-indicator { display: flex; gap: 4px; padding: 14px 18px; }
+        .typing-indicator .dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--lavender);
+            animation: typingBounce 1.4s infinite ease-in-out;
+        }
+        .typing-indicator .dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator .dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typingBounce {
+            0%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-8px); }
+        }
+
+        .emotion-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 50px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            background: rgba(168,240,216,0.2);
+            color: var(--sage);
+            margin-bottom: 4px;
+        }
+
+        .source-tag {
+            display: inline-block;
+            margin-left: 8px;
+            font-size: 10px;
+            opacity: 0.6;
+        }
+
+        .chat-input-area {
+            display: flex; padding: 14px; gap: 10px;
+            background: rgba(248,246,252,0.9);
+            border-top: 1px solid rgba(180,160,220,0.16);
+        }
+
+        body.dark .chat-input-area { background: rgba(22,18,31,0.9); border-top-color: rgba(255,255,255,0.07); }
+
+        .chat-input-area input {
+            flex: 1; padding: 11px 14px;
+            border-radius: 12px; border: 1.5px solid rgba(180,160,220,0.25);
+            background: rgba(255,255,255,0.85);
+            font-family: var(--font-body); font-size: 14px; color: var(--text);
+            outline: none; transition: var(--trans);
+        }
+
+        body.dark .chat-input-area input { background: rgba(255,255,255,0.08); color: var(--text); }
+        .chat-input-area input:focus { border-color: var(--lavender); box-shadow: 0 0 0 3px rgba(203,184,245,0.2); }
+
+        .chat-input-area button {
+            padding: 11px 18px; border: none; border-radius: 12px;
+            font-size: 13px; font-weight: 700; font-family: var(--font-body);
+            background: linear-gradient(135deg, var(--sage), var(--violet));
+            color: white; cursor: pointer; transition: var(--trans);
+            box-shadow: 0 6px 14px rgba(110,198,162,0.38);
+        }
+
+        .chat-input-area button:hover { transform: scale(1.06); }
 
         /* ── Popup ── */
         .popup {
@@ -508,369 +1125,287 @@
 
         .popup.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-        /* ── Chat Toggle ── */
-        .chat-toggle {
-            position: fixed; bottom: 28px; right: 28px;
-            background: linear-gradient(135deg, var(--sage), var(--violet));
-            color: white; padding: 14px 24px;
-            border-radius: 50px; cursor: pointer;
-            font-weight: 700; font-size: 14px;
-            font-family: var(--font-body);
-            box-shadow: 0 12px 32px rgba(110,198,162,0.45);
-            transition: var(--trans); z-index: 1000; border: none;
-            display: flex; align-items: center; gap: 8px;
-        }
-
-        .chat-toggle:hover { transform: scale(1.07); }
-
-        .chat-pulse {
-            width: 9px; height: 9px; border-radius: 50%;
-            background: white; opacity: 0.85;
-            animation: pulseDot 1.6s infinite ease-in-out;
-        }
-
-        @keyframes pulseDot {
-            0%,100% { transform: scale(1); opacity: 0.85; }
-            50%      { transform: scale(1.4); opacity: 0.4; }
-        }
-
-        /* ── Chatbot ── */
-        .chatbot {
-            position: fixed; bottom: 92px; right: 28px;
-            width: 400px; height: 540px;
-            background: rgba(254,249,244,0.98);
-            backdrop-filter: blur(20px);
-            border-radius: 28px;
-            border: 1px solid rgba(180,160,220,0.2);
-            box-shadow: 0 32px 72px rgba(100,80,140,0.28);
-            display: flex; flex-direction: column;
-            overflow: hidden;
-            animation: pageFadeIn 0.3s ease;
-            z-index: 1000;
-        }
-
-        body.dark .chatbot {
-            background: rgba(22,18,31,0.97);
-            border-color: rgba(255,255,255,0.09);
-        }
-
-        .hidden { display: none !important; }
-
-        .chat-header {
-            background: linear-gradient(135deg, #4e0dc5, #1a68f0);
-            color: white; padding: 18px 20px;
-            font-family: var(--font-display);
-            font-size: 18px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-
-        #chat-close { cursor: pointer; opacity: 0.8; transition: var(--trans); font-size: 18px; }
-        #chat-close:hover { opacity: 1; transform: scale(1.15); }
-
-        .chat-messages {
-            flex: 1; padding: 18px;
-            overflow-y: auto; display: flex;
-            flex-direction: column; gap: 12px;
-        }
-
-        .user-msg {
-            align-self: flex-end;
-            background: linear-gradient(135deg, #4e0dc5, #1a68f0);
-            color: white; padding: 11px 16px;
-            border-radius: 18px 18px 4px 18px;
-            max-width: 80%; font-size: 14.5px;
-            font-weight: 500; line-height: 1.5;
-        }
-
-        .bot-msg {
-            align-self: flex-start;
-            background: rgba(248,246,252,0.95);
-            color: var(--text); padding: 11px 16px;
-            border-radius: 18px 18px 18px 4px;
-            max-width: 80%; font-size: 14.5px;
-            font-weight: 500; line-height: 1.5;
-            border: 1px solid rgba(180,160,220,0.2);
-        }
-
-        body.dark .bot-msg { background: rgba(255,255,255,0.08); }
-
-        .chat-input-area {
-            display: flex; padding: 14px; gap: 10px;
-            background: rgba(248,246,252,0.9);
-            border-top: 1px solid rgba(180,160,220,0.16);
-        }
-
-        body.dark .chat-input-area {
-            background: rgba(22,18,31,0.9);
-            border-top-color: rgba(255,255,255,0.07);
-        }
-        .eq-btn {
-    margin-top: 12px;
-    padding: 10px 18px;
-    border: none;
-    border-radius: 50px;
-    font-size: 13.5px;
-    font-weight: 600;
-    cursor: pointer;
-    background: linear-gradient(135deg, var(--sage), var(--violet));
-    color: white;
-    box-shadow: 0 6px 18px rgba(110,198,162,0.35);
-    transition: var(--trans);
-}
-
-.eq-btn:hover {
-    transform: translateY(-2px) scale(1.03);
-    box-shadow: 0 12px 28px rgba(110,198,162,0.45);
-}
-        .chat-input-area input {
-            flex: 1; padding: 11px 14px;
-            border-radius: 12px; border: 1.5px solid rgba(180,160,220,0.25);
-            background: rgba(255,255,255,0.85);
-            font-family: var(--font-body); font-size: 14px; color: var(--text);
-            outline: none; transition: var(--trans);
-        }
-
-        body.dark .chat-input-area input {
-            background: rgba(255,255,255,0.08); color: var(--text);
-        }
-
-        .chat-input-area input:focus {
-            border-color: var(--lavender);
-            box-shadow: 0 0 0 3px rgba(203,184,245,0.2);
-        }
-
-        .chat-input-area button {
-            padding: 11px 18px; border: none; border-radius: 12px;
-            font-size: 13.5px; font-weight: 700; font-family: var(--font-body);
-            background: linear-gradient(135deg, var(--sage), var(--violet));
-            color: white; cursor: pointer; transition: var(--trans);
-            box-shadow: 0 6px 14px rgba(110,198,162,0.38);
-        }
-
-        .chat-input-area button:hover { transform: scale(1.06); }
-
-        /* Scrollbar */
+        /* ── Scrollbar ── */
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(180,160,220,0.28); border-radius: 8px; }
+
+        /* ══════════════════════════════════════
+           RESPONSIVE
+           ══════════════════════════════════════ */
+        @media (max-width: 1024px) {
+            .bento-grid { grid-template-columns: repeat(6, 1fr); }
+            .col-3, .col-4 { grid-column: span 3; }
+            .col-5, .col-6, .col-7, .col-8, .col-9, .col-12 { grid-column: span 6; }
+            .scene { padding: 20px 24px 40px; }
+        }
+
+        @media (max-width: 768px) {
+            .bento-grid { grid-template-columns: 1fr; }
+            .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-12 { grid-column: span 1; }
+            .scene { padding: 16px 16px 32px; }
+            .top-nav { padding: 12px 16px; }
+            .nav-link { padding: 6px 10px; font-size: 13px; }
+            .page-title { font-size: 28px; }
+            .dashboard-3d { transform: none; }
+            .chatbot { width: calc(100% - 24px); right: 12px; bottom: 80px; height: 60vh; }
+        }
+
+        @media (max-width: 480px) {
+            .nav-right .nav-link:not(.active) { display: none; }
+            .page-title { font-size: 24px; }
+        }
     </style>
 </head>
 <body>
 
-<!-- Background -->
-<div class="bg-wrap">
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-    <div class="blob blob-3"></div>
-</div>
-
-<!-- SVG Gradient for ring -->
+<!-- SVG Definitions -->
 <svg width="0" height="0" style="position:absolute">
     <defs>
         <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#6ec6a2"/>
-            <stop offset="100%" stop-color="#9b7fe8"/>
+            <stop offset="0%" stop-color="#9b7fe8"/>
+            <stop offset="100%" stop-color="#6ec6a2"/>
+        </linearGradient>
+        <linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#6ec6a2" stop-opacity="0.3"/>
+            <stop offset="100%" stop-color="#6ec6a2" stop-opacity="0"/>
         </linearGradient>
     </defs>
 </svg>
 
+<!-- Gradient Background -->
+<div class="scene-bg"></div>
+
+<!-- Floating Bubbles -->
+<div class="bubbles">
+    <div class="bubble bubble-1"></div>
+    <div class="bubble bubble-2"></div>
+    <div class="bubble bubble-3"></div>
+    <div class="bubble bubble-4"></div>
+    <div class="bubble bubble-5"></div>
+    <div class="bubble bubble-6"></div>
+    <div class="bubble bubble-7"></div>
+    <div class="bubble bubble-8"></div>
+</div>
+
+<!-- Sparkle Stars -->
+<div class="sparkle sparkle-1">✦</div>
+<div class="sparkle sparkle-2">✦</div>
+
 <!-- Navigation -->
 <nav class="top-nav">
-    <div class="nav-logo">
-        <div class="nav-logo-icon"><img class="logo" src="Mental Health Tracker LOGO.png" alt="C" srcset=""></div>
+    <a class="nav-brand" href="dashboard.html">
+        <img class="logo" src="Mental Health Tracker LOGO.png" alt="CEREVIA">
         CEREVIA
-    </div>
-    <div class="nav-links">
-        <a href="dashboard.html" class="active">Dashboard</a>
-        <a href="mood.html">Mood</a>
-        <a href="journal.html">Journal</a>
-        <a href="settings.html">Settings</a>
+    </a>
+    <div class="nav-right">
+        <a href="dashboard.html" class="nav-link active">Dashboard</a>
+        <a href="mood.html" class="nav-link">Mood</a>
+        <a href="journal.html" class="nav-link">Journal</a>
+        <a href="settings.html" class="nav-link">Settings</a>
+        <button class="nav-icon-btn" onclick="toggleThemeFromSettings()" title="Toggle theme">
+            🌓
+        </button>
+        <button class="nav-icon-btn" style="margin-left:2px">
+            🔔
+            <span class="notif-dot"></span>
+        </button>
         <button class="nav-logout" onclick="logout()">Sign out</button>
-        <div class="dark-toggle">
-            <input type="checkbox" id="darkSwitch" onclick="toggleDarkMode()">
-            <label for="darkSwitch"></label>
-        </div>
     </div>
 </nav>
 
-<!-- Page Header -->
-<div class="page-header">
-    <p class="page-greeting">Good day 🌤</p>
-    <h1 class="page-title">Your <span>Wellness</span> Dashboard</h1>
-</div>
+<!-- 3D Scene -->
+<div class="scene">
+    <div class="dashboard-3d">
 
-<!-- Dashboard Grid -->
-<div class="dashboard-grid">
+        <h1 class="page-title">Wellness Dashboard</h1>
 
-    <!-- Mood Ring — col 4 -->
-    <div class="dash-card col-4" style="animation-delay:.05s">
-        <div class="card-label">
-            <span class="card-label-dot"></span> Mood Score
-        </div>
-        <div class="ring-wrap">
-            <div class="progress-ring">
-                <svg>
-                    <circle class="bg" cx="55" cy="55" r="45"></circle>
-                    <circle class="progress" cx="55" cy="55" r="45"></circle>
-                </svg>
-                <div class="ring-text" id="moodPercent">0%</div>
+        <div class="bento-grid">
+
+            <!-- 1: Mood Score Ring -->
+            <div class="glass-card col-3 mood-score-card">
+                <div class="card-label"><span class="label-dot"></span> Mood Score</div>
+                <div class="ring-container">
+                    <svg viewBox="0 0 120 120">
+                        <circle class="ring-bg" cx="60" cy="60" r="50"></circle>
+                        <circle class="ring-progress" cx="60" cy="60" r="50"></circle>
+                    </svg>
+                    <div class="ring-percent" id="moodPercent">0%</div>
+                </div>
+                <div class="ring-footer">100%</div>
+                <div id="avgMoodBig" style="display:none"></div>
             </div>
-            <div class="ring-info">
-                <div class="ring-big" id="avgMoodBig">—</div>
-                <div class="ring-label">Average mood<br>this week</div>
+
+            <!-- 2: 3D Brain Visualization -->
+            <div class="glass-card col-3 brain-card">
+                <div class="brain-3d">
+                    <div class="brain-lobe brain-left"></div>
+                    <div class="brain-lobe brain-right"></div>
+                    <div class="brain-wave">
+                        <svg viewBox="0 0 140 40">
+                            <path d="M0,20 L15,20 L22,5 L30,35 L38,8 L46,32 L54,12 L62,28 L70,20 L78,20 L85,5 L93,35 L101,8 L109,32 L117,12 L125,28 L132,20 L140,20"/>
+                        </svg>
+                    </div>
+                </div>
             </div>
-        </div>
+
+            <!-- 3: Most Frequent Mood -->
+            <div class="glass-card col-3">
+                <div class="card-label"><span class="label-dot"></span> Most Frequent mood</div>
+                <div id="mostFrequentMood" style="font-family:var(--font-display); font-size:28px; color:var(--text); margin: 4px 0;">—</div>
+                <div class="freq-chart" id="weeklyChart"></div>
+                <div class="trend-arrow" id="moodTrend">
+                    <span>📈</span> <span>improving</span>
+                </div>
+            </div>
+
+            <!-- 4: Breathing Practice Hero -->
+            <div class="glass-card col-3 breathing-hero" onclick="window.location='breathing.html'" style="cursor:pointer">
+                <div class="card-label" style="color:var(--text)"><span class="label-dot"></span> Start Breathing Practice</div>
+                <div class="meditation-icon">🧘</div>
+                <div class="card-subtitle">Calm your mind with guided breathing</div>
+            </div>
+
+            <!-- 5: Today's Suggestion -->
+            <div class="glass-card col-4">
+                <div class="suggestion-chip">💬 Today's suggestion</div>
+                <p class="suggestion-text" id="suggestionText">Loading your personalised wellness suggestion…</p>
+                <div style="margin-top:12px">
+                    <button class="eq-btn" style="font-size:12px; padding:8px 16px" onclick="cachedSuggestion=null; updateSuggestion()">Refresh →</button>
+                </div>
+            </div>
+
+            <!-- 6: Start Breathing Wide Card -->
+            <div class="glass-card col-5 breathing-wide" onclick="window.location='breathing.html'" style="cursor:pointer">
+                <div class="traffic-dots">
+                    <span></span><span></span><span></span>
+                </div>
+                <div class="card-title">Start Breathing Practice</div>
+                <div class="card-subtitle">Deep breaths calm your nervous system & reduce stress</div>
+            </div>
+
+            <!-- 7: Boost Your EQ -->
+            <div class="glass-card col-3 eq-card">
+                <div class="eq-icon-wrap">🚀</div>
+                <div class="card-title">Boost Your EQ</div>
+                <p class="card-desc">Grow your emotional intelligence and self-awareness.</p>
+                <button class="eq-btn" onclick="openEQ()">Explore Now →</button>
+            </div>
+
+            <!-- 8: Journal & Streak Stats -->
+            <div class="glass-card col-4">
+                <div class="card-label"><span class="label-dot"></span> Your Activity</div>
+                <div class="stat-row">
+                    <div class="mini-stat">
+                        <div class="mini-stat-value" id="journalCount">0</div>
+                        <div class="mini-stat-label">Journal Entries</div>
+                    </div>
+                    <div class="mini-stat">
+                        <div class="mini-stat-value" id="positiveStreak">0</div>
+                        <div class="mini-stat-label">Positive Streak</div>
+                    </div>
+                    <div class="mini-stat">
+                        <div class="mini-stat-value" id="journalStreak">0</div>
+                        <div class="mini-stat-label">Journal Streak</div>
+                    </div>
+                </div>
+                <div style="margin-top:14px">
+                    <div class="card-label" style="margin-bottom:6px"><span class="label-dot"></span> Latest Mood</div>
+                    <div id="latestMoodText" style="font-family:var(--font-display); font-size:22px; color:var(--text);">—</div>
+                </div>
+            </div>
+
+            <!-- 9: Mood Prediction -->
+            <div class="glass-card col-4">
+                <div class="card-label"><span class="label-dot"></span> AI Mood Prediction</div>
+                <div style="display:flex; align-items:center; gap:12px; margin:8px 0">
+                    <div style="font-size:36px" id="predictionEmoji">🔮</div>
+                    <div>
+                        <div id="predictedMood" style="font-family:var(--font-display); font-size:22px; color:var(--text)">--</div>
+                        <div id="predictionBasis" style="font-size:12px; color:var(--sub); margin-top:2px"></div>
+                    </div>
+                </div>
+                <div style="font-size:12px; color:var(--sub); margin-top:4px">
+                    Confidence: <strong id="predictionConfidence">--</strong>
+                </div>
+            </div>
+
+            <!-- 10: Analytics Insights -->
+            <div class="glass-card col-4 analytics-card">
+                <div class="card-label"><span class="label-dot"></span> AI Insights</div>
+                <div id="analyticsInsights">
+                    <div class="insight-item">💡 Log more moods to unlock personalized insights</div>
+                </div>
+            </div>
+
+            <!-- 11: Emergency Box (hidden) -->
+            <div id="emergencyBox" class="glass-card col-12 emergency-card" style="display:none">
+                <div class="card-label emergency-label"><span class="label-dot" style="background:#e05050"></span> 🚨 Emergency Alert</div>
+                <p class="emergency-text">We noticed you might be in emotional distress. You're not alone — help is available right now.</p>
+                <button class="emergency-btn" onclick="callEmergency()">📞 Contact Emergency Support</button>
+            </div>
+
+        </div><!-- /bento-grid -->
+    </div><!-- /dashboard-3d -->
+</div><!-- /scene -->
+
+<!-- Chatbot Toggle -->
+<button id="chat-toggle" class="chat-toggle">
+    <span class="chat-pulse"></span> Chat with AI
+</button>
+
+<!-- Chatbot Panel -->
+<div id="chatbot" class="chatbot hidden">
+    <div class="chat-header">
+        🧠 CEREVIA AI
+        <span id="chat-close">✕</span>
     </div>
-
-    <!-- Journal Count — col 4 -->
-    <div class="dash-card col-4" style="animation-delay:.1s">
-        <div class="card-label">
-            <span class="card-label-dot"></span> Journal
-        </div>
-        <div class="stat-value" id="journalCount">0</div>
-        <div class="stat-sub">entries recorded</div>
-        <div style="margin-top:16px; height:4px; border-radius:4px; background: linear-gradient(90deg, var(--sage), var(--violet)); opacity:0.5;"></div>
+    <div id="chat-messages" class="chat-messages"></div>
+    <div class="chat-input-area">
+        <input type="text" id="chat-input" placeholder="How are you feeling today?">
+        <button id="sendBtn">Send</button>
     </div>
-
-    <!-- Frequent Mood — col 4 -->
-    <div class="dash-card col-4" style="animation-delay:.15s">
-        <div class="card-label">
-            <span class="card-label-dot"></span> Most Frequent
-        </div>
-        <div class="stat-value" id="mostFrequentMood" style="font-size:48px; -webkit-text-fill-color: initial; background: none; color: var(--text);">—</div>
-        <div class="stat-sub">dominant mood</div>
-    </div>
-
-    <!-- Latest Mood — col 3 -->
-    <div class="dash-card col-3" style="animation-delay:.2s">
-        <div class="card-label">
-            <span class="card-label-dot"></span> Latest
-        </div>
-        <div class="stat-value" id="latestMoodText" style="font-size:48px; -webkit-text-fill-color: initial; background: none; color: var(--text);">—</div>
-        <div class="stat-sub">most recent mood</div>
-    </div>
-
-    <!-- Today's Suggestion — col 9 -->
-    <div class="dash-card col-9" style="animation-delay:.25s">
-        <div class="suggestion-chip">💡 Today's suggestion</div>
-        <p class="suggestion-text" id="suggestionText">Loading your personalised wellness suggestion…</p>
-    </div>
-
-    <div class="dash-card col-9" style="animation-delay:.25s">
-        <div class="suggestion-chip">Feeling Tensed ?</div>
-        <p class="suggestion-text"><button class="action-btn" onclick="window.location='breathing.html'">
-        <span class="ab-icon">🫁</span> Start Breathing Practice
-    </button></p>
-    </div>
-
-    <div class="dash-card col-3">
-    <div class="card-label">
-        <span class="card-label-dot"></span>
-        Emotional Growth
-    </div>
-
-    <div class="card-title">Boost Your EQ</div>
-
-    <p class="suggestion-text">
-        Improve emotional awareness and intelligence.
-    </p>
-
-    <button class="eq-btn" onclick="openEQ()">
-        Explore Now →
-    </button>
-</div>
-
-    <!-- Weekly Chart — col 12 -->
-    <div class="dash-card col-12" style="animation-delay:.3s">
-        <div class="card-label">
-            <span class="card-label-dot"></span> Weekly Mood Trend
-        </div>
-        <div class="chart-container">
-            <div id="weeklyChart" class="weekly-chart"></div>
-        </div>
-    </div>
-
-    <!-- Emergency Box (hidden by default) -->
-    <div id="emergencyBox" class="dash-card col-12 emergency-card" style="display:none; animation-delay:.35s">
-        <div class="card-label emergency-label">
-            <span class="card-label-dot"></span> 🚨 Emergency Alert
-        </div>
-        <p class="emergency-text">We noticed you might be in emotional distress. You're not alone — help is available right now.</p>
-        <button class="emergency-btn-card" onclick="callEmergency()">📞 Contact Emergency Support</button>
-    </div>
-
-</div>
-
-<!-- Quick Actions -->
-<div class="quick-actions">
-    <button class="action-btn" onclick="window.location='mood.html'">
-        <span class="ab-icon">🌈</span> Log Mood
-    </button>
-    <button class="action-btn" onclick="window.location='journal.html'">
-        <span class="ab-icon">📘</span> Write Journal
-    </button>
-    <button class="action-btn" onclick="window.location='settings.html'">
-        <span class="ab-icon">⚙️</span> Settings
-    </button>
-    <button class="action-btn" onclick="window.location='index.html'">
-        <span class="ab-icon">⬅️</span> Back
-    </button>
 </div>
 
 <!-- Popup -->
 <div id="popup" class="popup"></div>
 
-<!-- Chat Toggle -->
-<button id="chat-toggle" class="chat-toggle" onclick="document.getElementById('chatbot').classList.toggle('hidden')">
-    <span class="chat-pulse"></span> How are you feeling?
-</button>
-
-<!-- Chatbot -->
-<div id="chatbot" class="chatbot hidden">
-    <div class="chat-header">
-        🌿 CEREVIA ASSISTANT
-        <span id="chat-close">✕</span>
-    </div>
-    <div id="chat-messages" class="chat-messages"></div>
-    <div class="chat-input-area">
-        <input type="text" id="chat-input" placeholder="Type your message…">
-        <button id="sendBtn" type="button">Send</button>
-    </div>
-</div>
-
-<script src="app.js" defer></script>
+<!-- Scripts -->
+<script src="app.js"></script>
 <script>
-    
-    document.addEventListener("DOMContentLoaded", function () {
-        if (typeof restoreTheme === "function") restoreTheme();
-        if (typeof requireAuth === "function") requireAuth();
-        if (typeof updateDashboard === "function") updateDashboard();
-    });
+    // Restore theme and initialize
+    restoreTheme();
 
-
-    function toggleDarkMode() {
-        if (typeof setTheme === "function") {
-            setTheme(document.body.classList.contains('dark') ? 'light' : 'dark');
-        } else {
-            document.body.classList.toggle('dark');
-            localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
-        }
+    // 3D Tilt on mouse move
+    const scene = document.querySelector('.dashboard-3d');
+    if (scene && window.innerWidth > 768) {
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 4;
+            const y = (e.clientY / window.innerHeight - 0.5) * 3;
+            scene.style.transform = `rotateX(${2 - y}deg) rotateY(${x}deg)`;
+        });
     }
 
-    window.addEventListener('storage', function (event) {
-        if (event.key === 'theme' && typeof restoreTheme === 'function') {
-            restoreTheme();
-        }
-    });
+    // Map mood names to emojis for prediction
+    const moodEmojis = {
+        'Happy': '😊', 'Calm': '😌', 'Neutral': '😐',
+        'Sad': '😔', 'Anxious': '😰', 'Angry': '😡'
+    };
 
-    
-
-    // Close chat on ✕
-    document.getElementById('chat-close').addEventListener('click', function () {
-        document.getElementById('chatbot').classList.add('hidden');
-    });
-
-    restoreTheme();
+    // Override prediction display to add emoji
+    const origUpdateAnalytics = updateAnalyticsDashboard;
+    const enhancedAnalytics = function() {
+        origUpdateAnalytics();
+        // Add emoji after prediction loads
+        setTimeout(() => {
+            const predEl = document.getElementById('predictedMood');
+            const emojiEl = document.getElementById('predictionEmoji');
+            if (predEl && emojiEl && predEl.textContent !== '--') {
+                emojiEl.textContent = moodEmojis[predEl.textContent] || '🔮';
+            }
+        }, 1500);
+    };
+    updateAnalyticsDashboard = enhancedAnalytics;
 </script>
 </body>
 </html>

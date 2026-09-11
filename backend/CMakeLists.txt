@@ -13,4 +13,5 @@ add_executable(backend
     Encryption.cpp
     libs/json/sqlite/sqlite3.c
 )
+set_source_files_properties(libs/json/sqlite/sqlite3.c PROPERTIES LANGUAGE C)
 target_link_libraries(backend ws2_32)

@@ -1,539 +1,322 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Journal</title>
-    <link rel="icon" type="image/png" href="favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CEREVIA - Journal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+    <script src="app.js" defer></script>
     <style>
         :root {
-            --mint:     #a8f0d8;
-            --sage:     #6ec6a2;
+            --mint: #a8f0d8;
+            --sage: #6ec6a2;
             --lavender: #cbb8f5;
-            --violet:   #9b7fe8;
-            --cream:    #fef9f4;
-            --text:     #2c2438;
-            --sub:      #7b6f8a;
-            --glass:    rgba(255,255,255,0.55);
-            --shadow:   0 20px 60px rgba(100,80,140,0.14);
-            --radius-lg: 26px;
-            --radius-md: 16px;
-            --radius-sm: 10px;
-            --trans:    0.35s cubic-bezier(.4,0,.2,1);
-            --font-display: 'DM Serif Display', serif;
-            --font-body:    'DM Sans', sans-serif;
+            --violet: #9b7fe8;
+            --cream: #e8edf5;
+            --text: #2c2438;
+            --sub: #7b6f8a;
+            --glass-bg: rgba(255, 255, 255, 0.42);
+            --glass-border: rgba(255, 255, 255, 0.65);
+            --shadow: 0 8px 32px rgba(100, 80, 140, 0.12);
         }
-
         body.dark {
-            --cream:  #16121f;
-            --text:   #f0eaf8;
-            --sub:    #b0a0c8;
-            --glass:  rgba(30,24,46,0.62);
-            --shadow: 0 20px 60px rgba(0,0,0,0.45);
+            --cream: #0f0b1a;
+            --text: #f0eaf8;
+            --sub: #b0a0c8;
+            --glass-bg: rgba(30, 24, 46, 0.55);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         }
-
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
         body {
-            font-family: var(--font-body);
-            background: var(--cream);
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--cream);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(168, 240, 216, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(203, 184, 245, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(246, 196, 212, 0.15) 0%, transparent 50%);
+            background-attachment: fixed;
             color: var(--text);
             min-height: 100vh;
-            transition: background var(--trans), color var(--trans);
-            animation: pageFadeIn 0.5s ease both;
-            padding-bottom: 80px;
+            overflow-x: hidden;
+            transition: background-color 0.4s ease, color 0.4s ease;
         }
 
-        @keyframes pageFadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to   { opacity: 1; transform: translateY(0); }
+        h1, h2, h3, .nav-brand {
+            font-family: 'DM Serif Display', serif;
         }
 
-        /* ── Blobs ── */
-        .bg-wrap {
-            position: fixed; inset: 0; z-index: 0;
-            overflow: hidden; pointer-events: none;
-        }
-        .blob {
-            position: absolute; border-radius: 50%;
-            filter: blur(80px); opacity: 0.4;
-            animation: blobDrift 16s ease-in-out infinite;
-        }
-        .blob-1 { width: 580px; height: 580px; background: #c3f4e4; top: -180px; left: -140px; animation-delay: 0s; }
-        .blob-2 { width: 460px; height: 460px; background: #e4d4fc; bottom: -120px; right: -100px; animation-delay: -6s; }
-        .blob-3 { width: 360px; height: 360px; background: #fcd4e8; top: 42%; left: 54%; animation-delay: -11s; }
-
-        body.dark .blob-1 { background: #112e42; opacity: 0.55; }
-        body.dark .blob-2 { background: #28144c; opacity: 0.55; }
-        body.dark .blob-3 { background: #3a1228; opacity: 0.45; }
-
-        @keyframes blobDrift {
-            0%,100% { transform: translate(0,0) scale(1); }
-            33%      { transform: translate(28px,-22px) scale(1.04); }
-            66%      { transform: translate(-18px,22px) scale(0.97); }
+        /* Bubbles */
+        .bubble {
+            position: fixed;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), rgba(255,255,255,0.1) 60%, transparent);
+            box-shadow: 
+                inset 0 0 20px rgba(255,255,255,0.5),
+                inset 10px 0 40px rgba(168, 240, 216, 0.3),
+                inset -10px 0 40px rgba(203, 184, 245, 0.3),
+                0 4px 15px rgba(0,0,0,0.05);
+            backdrop-filter: blur(4px);
+            z-index: -1;
+            animation: floatBubble var(--duration, 15s) infinite ease-in-out alternate;
         }
 
-        /* ── Nav ── */
+        @keyframes floatBubble {
+            0% { transform: translateY(0) translateX(0) rotate(0deg); }
+            100% { transform: translateY(-100px) translateX(50px) rotate(360deg); }
+        }
+
+        /* Nav */
         .top-nav {
-            position: sticky; top: 0; z-index: 50;
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 16px 32px;
-            background: rgba(255,255,255,0.5);
-            backdrop-filter: blur(22px);
-            -webkit-backdrop-filter: blur(22px);
-            border-bottom: 1px solid rgba(180,160,220,0.18);
-            box-shadow: 0 4px 24px rgba(100,80,140,0.07);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-        body.dark .top-nav {
-            background: rgba(22,18,31,0.72);
-            border-bottom-color: rgba(255,255,255,0.07);
-        }
-
-        .nav-logo {
-            font-family: var(--font-display);
-            font-size: 21px; color: var(--text);
-            letter-spacing: -0.3px;
-            display: flex; align-items: center; gap: 8px;
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            color: var(--text);
             text-decoration: none;
         }
-        .nav-logo-icon .logo{
-            width: 34px; height: 34px;;
-            border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 17px;
-        }
-
-        .nav-right { display: flex; align-items: center; gap: 8px; }
-
-        .nav-back {
-            display: flex; align-items: center; gap: 6px;
-            padding: 8px 18px;
-            border-radius: 50px;
-            border: 1.5px solid rgba(180,160,220,0.25);
-            background: rgba(255,255,255,0.4);
-            color: var(--text); font-size: 13.5px;
-            font-weight: 600; font-family: var(--font-body);
-            cursor: pointer; transition: var(--trans);
+        .logo { width: 32px; height: 32px; }
+        .nav-right { display: flex; align-items: center; gap: 1.5rem; }
+        .nav-link {
+            color: var(--sub);
             text-decoration: none;
-            backdrop-filter: blur(10px);
+            font-weight: 500;
+            transition: color 0.3s;
         }
-        body.dark .nav-back {
-            background: rgba(255,255,255,0.07);
-            border-color: rgba(255,255,255,0.1);
+        .nav-link:hover, .nav-link.active { color: var(--text); }
+        .nav-icon-btn {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: transform 0.3s, background 0.3s;
         }
-        .nav-back:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(100,80,140,0.14); }
+        .nav-icon-btn:hover {
+            transform: rotate(15deg);
+            background: var(--glass-bg);
+        }
 
-        /* Dark toggle */
-        .dark-toggle input { display: none; }
-        .dark-toggle label {
-            width: 48px; height: 26px;
-            background: rgba(180,160,220,0.25);
-            border: 1.5px solid rgba(180,160,220,0.4);
-            display: block; border-radius: 50px;
-            position: relative; cursor: pointer; transition: var(--trans);
-        }
-        .dark-toggle label::before {
-            content: "☀️"; font-size: 11px;
-            width: 20px; height: 20px; background: white;
-            position: absolute; top: 2px; left: 2px; border-radius: 50%;
-            transition: var(--trans);
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.12);
-        }
-        .dark-toggle input:checked + label { background: rgba(106,17,203,0.35); border-color: rgba(106,17,203,0.5); }
-        .dark-toggle input:checked + label::before { content: "🌙"; transform: translateX(22px); }
-
-        /* ── Page Layout ── */
-        .page-wrap {
-            position: relative; z-index: 10;
-            max-width: 1100px; margin: 0 auto;
-            padding: 40px 36px 0;
+        /* Perspective Container */
+        .perspective-container {
+            perspective: 1000px;
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            align-items: start;
+            gap: 2rem;
         }
 
-        .page-header {
-            grid-column: span 2;
-            margin-bottom: 8px;
-        }
-
-        .page-greeting {
-            font-size: 13px; font-weight: 600;
-            letter-spacing: 0.7px; text-transform: uppercase;
-            color: var(--sub); margin-bottom: 6px;
-        }
-
-        .page-title {
-            font-family: var(--font-display);
-            font-size: 36px; color: var(--text);
-            letter-spacing: -0.8px; line-height: 1.1;
-        }
-
-        .page-title span {
-            background: linear-gradient(135deg, var(--sage), var(--violet));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* ── Glass Panel ── */
-        .panel {
-            background: var(--glass);
-            border-radius: var(--radius-lg);
-            border: 1px solid rgba(255,255,255,0.65);
+        /* Glass Card */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2rem;
             box-shadow: var(--shadow);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            overflow: hidden;
-            animation: cardFadeIn 0.6s ease both;
-            transition: box-shadow var(--trans);
-        }
-
-        body.dark .panel {
-            border-color: rgba(255,255,255,0.09);
-            background: rgba(30,24,46,0.62);
-        }
-
-        @keyframes cardFadeIn {
-            from { opacity: 0; transform: translateY(16px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        .panel:hover { box-shadow: 0 28px 64px rgba(100,80,140,0.18); }
-
-        /* Write Panel */
-        .write-panel { animation-delay: .05s; }
-
-        .panel-header {
-            padding: 22px 26px 16px;
-            border-bottom: 1px solid rgba(180,160,220,0.14);
-        }
-
-        body.dark .panel-header { border-bottom-color: rgba(255,255,255,0.07); }
-
-        .panel-label {
-            font-size: 11.5px; font-weight: 700;
-            letter-spacing: 0.9px; text-transform: uppercase;
-            color: var(--sub);
-            display: flex; align-items: center; gap: 6px;
-            margin-bottom: 5px;
-        }
-
-        .panel-label-dot {
-            width: 7px; height: 7px; border-radius: 50%;
-            background: linear-gradient(135deg, var(--sage), var(--violet));
-        }
-
-        .panel-title {
-            font-family: var(--font-display);
-            font-size: 20px; color: var(--text);
-        }
-
-        /* Textarea */
-        .journal-body { padding: 0; }
-
-        .mood-row {
-            display: flex; gap: 8px; padding: 16px 26px 0;
-            flex-wrap: wrap;
-        }
-
-        .mood-chip {
-            padding: 6px 14px;
-            border-radius: 50px;
-            border: 1.5px solid rgba(180,160,220,0.22);
-            background: rgba(255,255,255,0.45);
-            font-size: 13px; font-weight: 600;
-            color: var(--sub); cursor: pointer;
-            transition: var(--trans);
-            user-select: none;
-        }
-
-        body.dark .mood-chip { background: rgba(255,255,255,0.07); }
-
-        .mood-chip:hover { border-color: var(--lavender); color: var(--text); }
-        .mood-chip.selected {
-            background: linear-gradient(135deg, rgba(168,240,216,0.45), rgba(203,184,245,0.45));
-            border-color: var(--lavender); color: var(--text);
-        }
-
-        .date-label {
-            padding: 14px 26px 4px;
-            font-size: 12px; color: var(--sub); font-weight: 500;
-        }
-
-        textarea.journal-textarea {
-            width: 100%;
-            min-height: 240px;
-            padding: 14px 26px 18px;
-            border: none;
-            background: transparent;
-            color: var(--text);
-            font-family: var(--font-body);
-            font-size: 15.5px;
-            line-height: 1.75;
-            resize: none;
-            outline: none;
-            transition: var(--trans);
-        }
-
-        textarea.journal-textarea::placeholder { color: var(--sub); opacity: 0.7; }
-
-        .char-counter {
-            padding: 0 26px 6px;
-            font-size: 11.5px; color: var(--sub);
-            text-align: right; font-weight: 500;
-            opacity: 0.7;
-        }
-
-        /* Action row */
-        .action-row {
-            display: flex; gap: 10px;
-            padding: 16px 26px 24px;
-            border-top: 1px solid rgba(180,160,220,0.12);
-        }
-
-        body.dark .action-row { border-top-color: rgba(255,255,255,0.06); }
-
-        .btn-save {
-            flex: 1;
-            padding: 14px;
-            border: none; border-radius: var(--radius-md);
-            background: linear-gradient(135deg, var(--sage), var(--violet));
-            color: white; font-family: var(--font-body);
-            font-size: 15px; font-weight: 700;
-            cursor: pointer; transition: var(--trans);
-            box-shadow: 0 8px 24px rgba(110,198,162,0.32);
-            letter-spacing: 0.2px;
-        }
-
-        .btn-save:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(110,198,162,0.44); }
-        .btn-save:active { transform: translateY(0); }
-
-        .btn-reset {
-            padding: 14px 18px;
-            border: 1.5px solid rgba(220,80,80,0.22);
-            border-radius: var(--radius-md);
-            background: rgba(220,80,80,0.08);
-            color: #c04040; font-family: var(--font-body);
-            font-size: 14px; font-weight: 600;
-            cursor: pointer; transition: var(--trans);
-        }
-
-        .btn-reset:hover { background: rgba(220,80,80,0.16); transform: translateY(-1px); }
-
-        /* ── Entries Panel ── */
-        .entries-panel { animation-delay: .12s; }
-
-        .entries-header {
-            display: flex; align-items: center; justify-content: space-between;
-        }
-
-        .entry-count-badge {
-            padding: 4px 12px;
-            background: linear-gradient(135deg, rgba(168,240,216,0.35), rgba(203,184,245,0.35));
-            border: 1px solid rgba(180,160,220,0.2);
-            border-radius: 50px;
-            font-size: 12px; font-weight: 700;
-            color: var(--text);
-        }
-
-        /* Search */
-        .search-wrap {
-            padding: 14px 22px;
-            border-bottom: 1px solid rgba(180,160,220,0.1);
-            position: relative;
-        }
-
-        body.dark .search-wrap { border-bottom-color: rgba(255,255,255,0.06); }
-
-        .search-icon {
-            position: absolute; left: 36px; top: 50%;
-            transform: translateY(-50%); font-size: 15px;
-            pointer-events: none;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 10px 14px 10px 38px;
-            border: 1.5px solid rgba(180,160,220,0.2);
-            border-radius: 50px;
-            background: rgba(255,255,255,0.55);
-            color: var(--text);
-            font-family: var(--font-body);
-            font-size: 14px; outline: none;
-            transition: var(--trans);
-        }
-
-        body.dark .search-input { background: rgba(255,255,255,0.07); }
-
-        .search-input::placeholder { color: var(--sub); font-weight: 400; }
-
-        .search-input:focus {
-            border-color: var(--lavender);
-            box-shadow: 0 0 0 3px rgba(203,184,245,0.2);
-            background: rgba(255,255,255,0.8);
-        }
-
-        body.dark .search-input:focus { background: rgba(255,255,255,0.12); }
-
-        /* Journal list */
-        .journal-list-wrap {
-            max-height: 520px;
-            overflow-y: auto;
-            padding: 14px 22px 22px;
-            display: flex; flex-direction: column; gap: 12px;
-        }
-
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(180,160,220,0.28); border-radius: 8px; }
-
-        .journal-entry {
-            padding: 16px 18px;
-            background: rgba(255,255,255,0.5);
-            border: 1px solid rgba(180,160,220,0.15);
-            border-radius: 18px;
-            cursor: pointer;
-            transition: var(--trans);
-            animation: entrySlide 0.4s ease both;
-        }
-
-        body.dark .journal-entry {
-            background: rgba(255,255,255,0.06);
-            border-color: rgba(255,255,255,0.08);
-        }
-
-        .journal-entry:hover {
-            transform: translateX(4px);
-            border-color: rgba(203,184,245,0.35);
-            box-shadow: 0 6px 20px rgba(100,80,140,0.1);
-        }
-
-        @keyframes entrySlide {
-            from { opacity: 0; transform: translateX(-12px); }
-            to   { opacity: 1; transform: translateX(0); }
-        }
-
-        .entry-top {
-            display: flex; align-items: center;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-
-        .entry-date {
-            font-size: 11.5px; font-weight: 700;
-            letter-spacing: 0.5px;
-            color: var(--sub);
-            text-transform: uppercase;
-        }
-
-        .entry-mood-tag {
-            padding: 3px 10px;
-            border-radius: 50px;
-            background: linear-gradient(135deg, rgba(168,240,216,0.4), rgba(203,184,245,0.4));
-            border: 1px solid rgba(180,160,220,0.2);
-            font-size: 11px; font-weight: 700;
-            color: var(--text);
-        }
-
-        .entry-text {
-            font-size: 14px; line-height: 1.6;
-            color: var(--text);
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .entry-delete {
-            margin-top: 10px;
-            display: flex; justify-content: flex-end;
-        }
-
-        .delete-btn {
-            padding: 4px 12px;
-            border: 1px solid rgba(220,80,80,0.2);
-            border-radius: 50px;
-            background: transparent;
-            color: #c04040; font-size: 11.5px;
-            font-weight: 600; font-family: var(--font-body);
-            cursor: pointer; transition: var(--trans);
-        }
-
-        .delete-btn:hover { background: rgba(220,80,80,0.1); }
-
-        .empty-state {
-            text-align: center; padding: 48px 20px;
-            color: var(--sub);
-        }
-
-        .empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.6; }
-        .empty-text { font-size: 14px; line-height: 1.6; }
-
-        /* ── Popup ── */
-        .popup {
-            position: fixed; bottom: 32px; left: 50%;
-            transform: translateX(-50%) translateY(20px);
-            padding: 13px 30px;
-            background: linear-gradient(135deg, var(--sage), var(--violet));
-            color: white; border-radius: 50px;
-            font-size: 14px; font-weight: 600;
-            box-shadow: 0 14px 34px rgba(110,198,162,0.38);
+            transform-style: preserve-3d;
+            animation: cardEntrance 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
             opacity: 0;
-            transition: 0.45s cubic-bezier(.34,1.56,.64,1);
-            z-index: 9999; pointer-events: none;
+            transform: translateZ(-40px);
         }
-        .popup.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .glass-card:nth-child(2) { animation-delay: 0.1s; }
+
+        @keyframes cardEntrance {
+            to {
+                opacity: 1;
+                transform: translateZ(0);
+            }
+        }
+
+        /* Journal Page Specific */
+        .journal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .mood-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+        .mood-chip {
+            padding: 8px 16px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        .mood-chip:hover, .mood-chip.selected {
+            background: var(--violet);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(155, 127, 232, 0.3);
+            border-color: var(--violet);
+        }
+
+        .input-area textarea {
+            width: 100%;
+            height: 250px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            font-family: inherit;
+            font-size: 1.1rem;
+            color: var(--text);
+            resize: none;
+            margin-bottom: 0.5rem;
+            transition: background 0.3s, border-color 0.3s;
+        }
+        body.dark .input-area textarea {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        .input-area textarea:focus {
+            outline: none;
+            border-color: var(--violet);
+            background: rgba(255, 255, 255, 0.3);
+        }
+        body.dark .input-area textarea:focus { background: rgba(0, 0, 0, 0.4); }
+        
+        .char-counter {
+            text-align: right;
+            font-size: 0.9rem;
+            color: var(--sub);
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+        }
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 50px;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        button.primary {
+            background: var(--text);
+            color: var(--cream);
+        }
+        button.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        button.secondary {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text);
+        }
+        button.secondary:hover {
+            background: rgba(255, 0, 0, 0.1);
+            color: #d94848;
+            border-color: #d94848;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 12px 20px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            color: var(--text);
+            font-family: inherit;
+            margin-bottom: 1.5rem;
+        }
+        
+        .journal-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        .journal-list::-webkit-scrollbar { width: 6px; }
+        .journal-list::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
+        
+        .journal-entry {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.2rem;
+            transition: transform 0.3s;
+        }
+        .journal-entry:hover {
+            transform: translateX(5px);
+            border-color: var(--violet);
+        }
+
+        @media (max-width: 768px) {
+            .perspective-container { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
+    <!-- Bubbles -->
+    <div class="bubble" style="width:100px; height:100px; top:10%; left:10%; --duration: 12s;"></div>
+    <div class="bubble" style="width:80px; height:80px; top:20%; left:80%; --duration: 15s;"></div>
+    <div class="bubble" style="width:60px; height:60px; top:70%; left:20%; --duration: 18s;"></div>
+    <div class="bubble" style="width:120px; height:120px; top:80%; left:70%; --duration: 20s;"></div>
+    <div class="bubble" style="width:50px; height:50px; top:40%; left:40%; --duration: 14s;"></div>
+    <div class="bubble" style="width:90px; height:90px; top:60%; left:85%; --duration: 16s;"></div>
+    <div class="bubble" style="width:70px; height:70px; top:85%; left:15%; --duration: 19s;"></div>
+    <div class="bubble" style="width:40px; height:40px; top:15%; left:60%; --duration: 13s;"></div>
 
-<!-- Background Blobs -->
-<div class="bg-wrap">
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-    <div class="blob blob-3"></div>
-</div>
-
-<!-- Navigation -->
-<nav class="top-nav">
-    <a class="nav-logo" href="dashboard.html">
-        <div class="nav-logo-icon"><img class="logo" src="Mental Health Tracker LOGO.png" alt="C" srcset=""></div>
-        CEREVIA
-    </div>
-    </a>
-    <div class="nav-right">
-        <a class="nav-back" href="dashboard.html">← Dashboard</a>
-        <div class="dark-toggle">
-            <input type="checkbox" id="darkSwitch" onclick="toggleDarkMode()">
-            <label for="darkSwitch"></label>
+    <nav class="top-nav">
+        <a class="nav-brand" href="dashboard.html">
+            <img class="logo" src="Mental Health Tracker LOGO.png" alt="CEREVIA" onerror="this.style.display='none'">
+            CEREVIA
+        </a>
+        <div class="nav-right">
+            <a href="dashboard.html" class="nav-link">Dashboard</a>
+            <a href="mood.html" class="nav-link">Mood</a>
+            <a href="journal.html" class="nav-link active">Journal</a>
+            <a href="settings.html" class="nav-link">Settings</a>
+            <button class="nav-icon-btn" onclick="toggleThemeFromSettings()" title="Toggle theme">🌓</button>
         </div>
-    </div>
-</nav>
+    </nav>
 
-<!-- Page -->
-<div class="page-wrap">
-
-    <!-- Header -->
-    <div class="page-header">
-        <p class="page-greeting">Reflect & grow ✍️</p>
-        <h1 class="page-title">My <span>Journal</span></h1>
-    </div>
-
-    <!-- Write Panel -->
-    <div class="panel write-panel">
-        <div class="panel-header">
-            <div class="panel-label">
-                <span class="panel-label-dot"></span> New Entry
+    <div class="perspective-container">
+        <!-- LEFT COLUMN -->
+        <div class="glass-card">
+            <div class="journal-header">
+                <h2>What's on your mind? ✦</h2>
+                <p id="entryDateLabel" style="color: var(--sub); font-size: 0.9rem;"></p>
             </div>
-            <div class="panel-title">What's on your mind?</div>
-        </div>
-
-        <div class="journal-body">
-            <!-- Quick mood tags -->
-            <div class="mood-row" id="moodRow">
+            
+            <div class="mood-chips" id="moodRow">
                 <span class="mood-chip" onclick="selectMood(this)">😊 Happy</span>
                 <span class="mood-chip" onclick="selectMood(this)">😔 Sad</span>
                 <span class="mood-chip" onclick="selectMood(this)">😰 Anxious</span>
@@ -542,135 +325,76 @@
                 <span class="mood-chip" onclick="selectMood(this)">😴 Tired</span>
             </div>
 
-            <p class="date-label" id="entryDateLabel"></p>
-
-            <textarea
-                class="journal-textarea"
-                id="entry"
-                placeholder="Pour your thoughts here… This is your safe space. No judgment, just reflection."
-                oninput="updateCharCount(this)"
-            ></textarea>
-
-            <p class="char-counter" id="charCount">0 / 1000</p>
-        </div>
-
-        <div class="action-row">
-            <button class="btn-save" onclick="saveJournal()">✦ Save Entry</button>
-            <button class="btn-reset" onclick="resetJournal()" title="Clear all entries">🗑 Reset</button>
-        </div>
-    </div>
-
-    <!-- Entries Panel -->
-    <div class="panel entries-panel">
-        <div class="panel-header">
-            <div class="panel-label">
-                <span class="panel-label-dot"></span> History
+            <div class="input-area">
+                <textarea id="entry" placeholder="Pour your thoughts here..." oninput="updateCharCount(this)" maxlength="1000"></textarea>
+                <p id="charCount" class="char-counter">0 / 1000</p>
             </div>
-            <div class="entries-header">
-                <div class="panel-title">Previous Entries</div>
-                <span class="entry-count-badge" id="entryCountBadge">0 entries</span>
+
+            <div class="btn-group">
+                <button class="primary" onclick="saveJournal()">✦ Save Entry</button>
+                <button class="secondary" onclick="resetJournal()">🗑 Reset</button>
             </div>
         </div>
 
-        <div class="search-wrap">
-            <span class="search-icon">🔍</span>
-            <input
-                class="search-input"
-                type="text"
-                placeholder="Search entries…"
-                oninput="filterEntries(this.value)"
-            >
-        </div>
-
-        <div class="journal-list-wrap" id="journalList">
-            <div class="empty-state">
-                <div class="empty-icon">📖</div>
-                <p class="empty-text">No entries yet.<br>Start writing to see your journey here.</p>
+        <!-- RIGHT COLUMN -->
+        <div class="glass-card">
+            <div class="journal-header">
+                <h2>Previous Entries <span id="entryCountBadge" style="font-size:1rem; padding:2px 10px; background:var(--violet); color:white; border-radius:12px; vertical-align:middle; margin-left:10px;">0</span></h2>
+            </div>
+            
+            <input type="text" class="search-bar" placeholder="🔍 Search entries…" oninput="filterEntries(this.value)">
+            
+            <div id="journalList" class="journal-list">
+                <div style="text-align:center; padding: 2rem; color: var(--sub);">
+                    📖 Start writing to see your entries here
+                </div>
             </div>
         </div>
     </div>
 
-</div>
-
-<!-- Popup Toast -->
-<div id="popup" class="popup"></div>
-
-<script src="app.js" defer></script>
-<script>
-    /* ── Theme ── */
-    function syncThemeToggle() {
-        const sw = document.getElementById('darkSwitch');
-        if (sw) sw.checked = document.body.classList.contains('dark');
-    }
-
-    function toggleDarkMode() {
-        const nextTheme = document.body.classList.contains('dark') ? 'light' : 'dark';
-        if (typeof setTheme === 'function') {
-            setTheme(nextTheme);
-        } else {
-            document.body.classList.toggle('dark', nextTheme === 'dark');
-            localStorage.setItem('theme', nextTheme);
-            syncThemeToggle();
+    <script>
+        function setDateLabel() {
+            const el = document.getElementById('entryDateLabel');
+            if (el) el.textContent = new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
         }
-    }
-
-    function restoreTheme() {
-        const isDark = localStorage.getItem('theme') === 'dark';
-        document.body.classList.toggle('dark', isDark);
-        syncThemeToggle();
-    }
-
-    window.addEventListener('storage', function (event) {
-        if (event.key === 'theme') restoreTheme();
-    });
-
-    /* ── Date label ── */
-    function setDateLabel() {
-        const el = document.getElementById('entryDateLabel');
-        if (!el) return;
-        const now = new Date();
-        el.textContent = now.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-    }
-
-    /* ── Mood chips ── */
-    function selectMood(el) {
-        document.querySelectorAll('.mood-chip').forEach(c => c.classList.remove('selected'));
-        el.classList.add('selected');
-    }
-
-    /* ── Char counter ── */
-    function updateCharCount(el) {
-        const count = el.value.length;
-        const display = document.getElementById('charCount');
-        if (display) display.textContent = count + ' / 1000';
-        if (count > 900) display.style.color = '#e05050';
-        else display.style.color = 'var(--sub)';
-    }
-
-    /* ── Search filter (UI stub — wire to app.js data) ── */
-    function filterEntries(query) {
-        const entries = document.querySelectorAll('.journal-entry');
-        entries.forEach(e => {
-            const text = e.textContent.toLowerCase();
-            e.style.display = text.includes(query.toLowerCase()) ? '' : 'none';
-        });
-    }
-
-    /* ── Popup helper ── */
-    function showPopup(msg) {
-        const p = document.getElementById('popup');
-        p.textContent = msg;
-        p.classList.add('show');
-        setTimeout(() => p.classList.remove('show'), 2800);
-    }
-
-    /* ── Init ── */
-    window.onload = function () {
-        restoreTheme();
-        setDateLabel();
-        if (typeof loadJournal  === 'function') loadJournal();
-        if (typeof restoreDarkMode === 'function') restoreDarkMode();
-    };
-</script>
+        function selectMood(el) {
+            document.querySelectorAll('.mood-chip').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+        function updateCharCount(el) {
+            const counter = document.getElementById('charCount');
+            if (counter) {
+                const len = el.value.length;
+                counter.textContent = len + ' / 1000';
+                counter.style.color = len > 900 ? '#e05050' : 'var(--sub)';
+            }
+        }
+        function filterEntries(query) {
+            const q = query.toLowerCase();
+            document.querySelectorAll('.journal-entry').forEach(e => {
+                e.style.display = e.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+        }
+        function saveJournal() {
+            // Mock save function
+            alert("Journal saved (mock)!");
+        }
+        function resetJournal() {
+            document.getElementById('entry').value = '';
+            updateCharCount(document.getElementById('entry'));
+            document.querySelectorAll('.mood-chip').forEach(c => c.classList.remove('selected'));
+        }
+        function loadJournal() {
+            // Mock load
+        }
+        function restoreTheme() {
+            if(localStorage.getItem('theme') === 'dark') document.body.classList.add('dark');
+        }
+        window.onload = function() {
+            restoreTheme();
+            setDateLabel();
+            loadJournal();
+        };
+    </script>
 </body>
 </html>
